@@ -1011,7 +1011,7 @@ function renderAtivBloco(a, projetoId){
 
   return`<div class="ativ-bloco" id="ativ-${a.id}">
     <div class="ativ-header" onclick="toggleAtiv('${a.id}')">
-      <span class="ativ-expand-icon ${isOpen?'open'}">▶</span>
+      <span class="ativ-expand-icon ${isOpen?'open':''}">▶</span>
       <div style="flex:1;min-width:0">
         <div class="ativ-nome">${a.nome}</div>
         ${a.descricao?`<div style="font-size:.73rem;color:var(--text3);margin-top:1px">${a.descricao}</div>`:''}
@@ -1021,7 +1021,7 @@ function renderAtivBloco(a, projetoId){
       <button class="btn-icon" style="font-size:.73rem;padding:3px 7px" onclick="event.stopPropagation();editarAtividade('${a.id}')">✏</button>
       <button class="ativ-del-btn" onclick="event.stopPropagation();deletarAtividade('${a.id}','${projetoId}')">✕</button>
     </div>
-    <div class="ativ-body ${isOpen?'open'}" id="ativbody-${a.id}">
+    <div class="ativ-body ${isOpen?'open':''}" id="ativbody-${a.id}">
       ${pend.map(t=>renderAtivTarefa(t,projetoId)).join('')}
       ${done.length>0?`
         <div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:8px 0 4px;margin-top:4px;border-top:1px solid var(--border)">Concluídas (${done.length})</div>
