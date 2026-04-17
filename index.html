@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Meu Espaço</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f5f7ee;--bg2:#eef2e2;--bg3:#e4ebce;
+  --card:#ffffff;--card2:#f0f4e4;
+  --border:rgba(43,59,28,.10);--border2:rgba(43,59,28,.20);
+  --text:#1e2a12;--text2:#4a5e34;--text3:#8a9e74;
+  --darkgreen:#2b3b1c;--lime:#d2e67b;--softpink:#ffc3cc;
+  --rose:#c94d5e;--amber:#b07a28;--emerald:#2e6e38;
+  --sidebar-w:230px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+#auth-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:100}
+#auth-screen.hidden{display:none!important}
+.auth-glow{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(210,230,123,.3) 0%,transparent 70%);pointer-events:none}
+.auth-card{position:relative;z-index:1;background:var(--card);border:1px solid var(--border2);border-radius:22px;padding:44px;width:380px;max-width:92vw;box-shadow:0 24px 60px rgba(0,0,0,.12)}
+.auth-logo{font-family:'Fraunces',serif;font-size:1.9rem;font-weight:700;color:var(--darkgreen);margin-bottom:6px}
+.auth-tagline{color:var(--text2);font-size:.87rem;margin-bottom:30px}
+.auth-card label{display:block;font-size:.73rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.auth-card input{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.92rem;margin-bottom:16px;outline:none;transition:border .2s}
+.auth-card input:focus{border-color:var(--darkgreen)}
+.btn-auth{width:100%;padding:13px;background:var(--darkgreen);border:none;border-radius:10px;color:var(--lime);font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;margin-top:4px}
+.auth-err{color:var(--rose);font-size:.8rem;margin-top:-8px;margin-bottom:12px;display:none}
+.setup-screen{position:fixed;inset:0;background:var(--bg);z-index:150;display:flex;align-items:center;justify-content:center}
+.setup-card{background:var(--card);border:1px solid var(--border2);border-radius:22px;padding:44px;max-width:440px;width:92vw;text-align:center}
+.setup-title{font-family:'Fraunces',serif;font-size:1.7rem;font-weight:700;color:var(--text);margin-bottom:10px}
+.setup-sub{color:var(--text2);font-size:.88rem;margin-bottom:26px;line-height:1.6}
+.app{display:flex;height:100vh}
+.hidden{display:none!important}
+.sidebar{width:var(--sidebar-w);background:var(--darkgreen);display:flex;flex-direction:column;padding:18px 0;flex-shrink:0;overflow-y:auto;box-shadow:2px 0 12px rgba(43,59,28,.15);z-index:20;transition:transform .25s}
+.sidebar-logo{padding:0 16px 18px;font-family:'Fraunces',serif;font-size:1.25rem;font-weight:700;color:var(--lime)}
+.sidebar-logo span{color:rgba(210,230,123,.4);font-size:.68rem;font-family:'DM Sans',sans-serif;font-weight:400;display:block;margin-top:1px}
+.nav-section{padding:0 8px;margin-bottom:4px}
+.nav-label{font-size:.65rem;font-weight:600;color:rgba(210,230,123,.3);text-transform:uppercase;letter-spacing:.1em;padding:5px 8px 3px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:8px;cursor:pointer;color:rgba(210,230,123,.55);font-size:.83rem;font-weight:400;transition:all .15s;margin-bottom:1px;border-left:2px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.07);color:var(--lime)}
+.nav-item.active{background:rgba(210,230,123,.12);color:var(--lime);font-weight:600;border-left-color:var(--lime)}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block;flex-shrink:0;opacity:.5}
+.nav-item.active .nav-dot{opacity:1}
+.nav-badge{margin-left:auto;background:var(--lime);color:var(--darkgreen);font-size:.65rem;font-weight:700;padding:2px 6px;border-radius:20px}
+.sidebar-footer{margin-top:auto;padding:12px 16px 0;border-top:1px solid rgba(210,230,123,.1)}
+.sidebar-user{display:flex;align-items:center;gap:9px;color:rgba(210,230,123,.6);font-size:.82rem}
+.user-avatar{width:30px;height:30px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--darkgreen);flex-shrink:0}
+.btn-logout{background:none;border:none;color:rgba(210,230,123,.35);cursor:pointer;font-size:.75rem;margin-left:auto;padding:3px 7px;border-radius:5px;transition:color .2s}
+.btn-logout:hover{color:var(--lime)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:19}
+.sidebar-overlay.show{display:block}
+.menu-btn{display:none;background:none;border:none;cursor:pointer;color:var(--text);font-size:1.3rem;padding:4px 8px;line-height:1}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{padding:16px 24px;border-bottom:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:10px}
+.topbar-left{display:flex;align-items:center;gap:10px;min-width:0}
+.topbar-left h1{font-family:'Fraunces',serif;font-size:1.35rem;font-weight:700;color:var(--text);white-space:nowrap}
+.topbar-left p{color:var(--text2);font-size:.8rem;margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.content{flex:1;overflow-y:auto;padding:22px 24px}
+.btn-primary{background:var(--darkgreen);border:none;border-radius:9px;color:var(--lime);padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer;transition:opacity .2s;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.btn-primary:hover{opacity:.88}
+.btn-secondary{background:var(--card2);border:1px solid var(--border2);border-radius:9px;color:var(--text2);padding:7px 13px;font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-secondary:hover{color:var(--text);border-color:var(--darkgreen)}
+.btn-cancel{background:var(--bg3);border:1px solid var(--border);border-radius:9px;color:var(--text2);padding:9px 18px;font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer}
+.btn-save{background:var(--darkgreen);border:none;border-radius:9px;color:var(--lime);padding:9px 22px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer}
+.btn-icon{background:var(--bg2);border:1px solid var(--border);border-radius:7px;color:var(--text2);padding:5px 8px;cursor:pointer;font-size:.78rem;transition:all .15s}
+.btn-icon:hover{color:var(--text)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px}
+.card-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:500;color:var(--text);margin-bottom:14px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px}
+.section-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--text)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;align-items:flex-start;gap:12px}
+.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;background:var(--bg3)}
+.stat-n{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:700;color:var(--text);line-height:1}
+.stat-l{font-size:.75rem;color:var(--text2);margin-top:3px}
+.stat-sub{font-size:.7rem;color:var(--text3);margin-top:1px}
+.focus-card{background:linear-gradient(135deg,rgba(210,230,123,.2),rgba(255,195,204,.1));border:1px solid rgba(43,59,28,.15);border-radius:14px;padding:20px;margin-bottom:18px}
+.focus-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--darkgreen);margin-bottom:10px}
+.focus-input-row{display:flex;gap:8px}
+.focus-input{flex:1;background:rgba(255,255,255,.8);border:1px solid rgba(43,59,28,.2);border-radius:9px;padding:10px 13px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;min-width:0}
+.focus-input:focus{border-color:var(--darkgreen)}
+.tab-row{display:flex;gap:3px;margin-bottom:14px;padding:3px;background:var(--bg3);border-radius:9px}
+.tab-btn{flex:1;padding:7px 5px;border:none;border-radius:6px;background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;cursor:pointer;transition:all .15s}
+.tab-btn.active{background:var(--darkgreen);color:var(--lime)}
+.task-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.task-item:last-child{border-bottom:none}
+.task-check{width:19px;height:19px;border-radius:5px;border:2px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.task-check.done{background:var(--darkgreen);border-color:var(--darkgreen)}
+.task-check.done::after{content:'✓';color:var(--lime);font-size:.65rem;font-weight:700}
+.task-text{flex:1;font-size:.87rem;color:var(--text);min-width:0}
+.task-text.done{text-decoration:line-through;color:var(--text3)}
+.task-date{font-size:.72rem;color:var(--text3);white-space:nowrap;flex-shrink:0}
+.task-prio{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.p-alta{background:var(--rose)}.p-media{background:var(--amber)}.p-baixa{background:var(--emerald)}
+.task-rec{font-size:.65rem;background:rgba(43,59,28,.08);color:var(--text2);padding:2px 6px;border-radius:10px;flex-shrink:0}
+.task-del{background:none;border:none;color:var(--text3);cursor:pointer;opacity:0;font-size:.9rem;padding:3px;flex-shrink:0}
+.task-item:hover .task-del{opacity:1}
+.add-task-row{display:flex;gap:7px;margin-top:14px}
+.add-task-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.84rem;outline:none;min-width:0}
+.add-task-input:focus{border-color:var(--darkgreen)}
+.btn-add{background:var(--darkgreen);border:none;border-radius:8px;color:var(--lime);padding:8px 13px;cursor:pointer;font-size:.9rem;flex-shrink:0}
+.projetos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.projeto-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.projeto-card:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.1)}
+.projeto-nome{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:5px;margin-top:6px}
+.projeto-desc{font-size:.8rem;color:var(--text2);margin-bottom:14px;line-height:1.5}
+.progress-bar-wrap{background:var(--bg3);border-radius:100px;height:5px;margin-bottom:7px}
+.progress-bar{height:100%;border-radius:100px;transition:width .4s ease}
+.projeto-meta{display:flex;align-items:center;justify-content:space-between;font-size:.75rem;color:var(--text2)}
+.projeto-status{padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:600}
+.s-ativo{background:rgba(210,230,123,.3);color:#2a5c2f}.s-pausado{background:rgba(255,195,204,.4);color:#8a3040}
+.s-concluido{background:rgba(43,59,28,.1);color:var(--darkgreen)}.s-planejado{background:rgba(43,59,28,.06);color:var(--text2)}
+.projeto-actions{display:flex;gap:5px;opacity:0;transition:opacity .15s;position:absolute;top:12px;right:12px}
+.projeto-card:hover .projeto-actions{opacity:1}
+.back-btn{display:flex;align-items:center;gap:5px;color:var(--text2);background:none;border:none;font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;padding:0;margin-bottom:18px}
+.back-btn:hover{color:var(--text)}
+.projeto-detalhe-grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+.progress-slider{width:100%;-webkit-appearance:none;height:5px;background:var(--bg3);border-radius:100px;outline:none;cursor:pointer;margin-top:12px}
+.progress-slider::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--darkgreen);cursor:pointer;border:2px solid var(--bg)}
+.progress-value{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:700;color:var(--darkgreen)}
+.color-picker-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.color-dot{width:26px;height:26px;border-radius:50%;cursor:pointer;transition:transform .15s;border:3px solid transparent}
+.color-dot:hover{transform:scale(1.15)}
+.color-dot.selected{border-color:var(--darkgreen)}
+
+/* ATIVIDADES */
+.ativ-bloco{background:var(--bg2);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.ativ-header{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;transition:background .15s}
+.ativ-header:hover{background:var(--bg3)}
+.ativ-expand-icon{font-size:.75rem;color:var(--text3);flex-shrink:0;transition:transform .2s;width:14px;text-align:center}
+.ativ-expand-icon.open{transform:rotate(90deg)}
+.ativ-nome{font-weight:600;font-size:.88rem;color:var(--text);flex:1}
+.ativ-prazo-badge{font-size:.68rem;padding:2px 8px;border-radius:10px;background:var(--bg3);color:var(--text2);flex-shrink:0}
+.ativ-prazo-badge.vencido{background:rgba(201,77,94,.12);color:var(--rose)}
+.ativ-prazo-badge.proximo{background:rgba(176,122,40,.12);color:var(--amber)}
+.ativ-progresso-mini{font-size:.68rem;color:var(--text3);flex-shrink:0}
+.ativ-del-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.82rem;padding:2px 5px;opacity:0;transition:opacity .15s}
+.ativ-header:hover .ativ-del-btn{opacity:1}
+.ativ-body{padding:0 14px 12px;display:none}
+.ativ-body.open{display:block}
+.ativ-task-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)}
+.ativ-task-row:last-of-type{border-bottom:none}
+.ativ-task-check{width:17px;height:17px;border-radius:4px;border:2px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.ativ-task-check.done{background:var(--darkgreen);border-color:var(--darkgreen)}
+.ativ-task-check.done::after{content:'✓';color:var(--lime);font-size:.6rem;font-weight:700}
+.ativ-task-text{flex:1;font-size:.83rem;color:var(--text)}
+.ativ-task-text.done{text-decoration:line-through;color:var(--text3)}
+.ativ-task-date{font-size:.68rem;color:var(--text3);white-space:nowrap;flex-shrink:0}
+.ativ-task-date.vencido{color:var(--rose);font-weight:600}
+.ativ-task-prio{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ativ-task-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.8rem;padding:2px;opacity:0;flex-shrink:0}
+.ativ-task-row:hover .ativ-task-del{opacity:1}
+.ativ-add-task{display:flex;gap:6px;margin-top:10px}
+.ativ-add-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:7px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--text);outline:none;min-width:0}
+.ativ-add-input:focus{border-color:var(--darkgreen)}
+.ativ-add-btn{background:var(--darkgreen);border:none;border-radius:7px;color:var(--lime);padding:7px 11px;cursor:pointer;font-size:.85rem;flex-shrink:0}
+.ativ-desc{font-size:.78rem;color:var(--text2);margin-bottom:10px;line-height:1.5}
+
+.kanban{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+.kanban-col{background:var(--bg2);border-radius:12px;padding:14px}
+.kanban-col-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.kanban-count{background:var(--bg3);border-radius:20px;padding:2px 8px;font-size:.7rem}
+.kanban-task{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:10px 12px;margin-bottom:8px}
+.kanban-task:last-child{margin-bottom:0}
+.kanban-task-text{font-size:.85rem;color:var(--text);margin-bottom:5px}
+.kanban-task-text.done{text-decoration:line-through;color:var(--text3)}
+.ideias-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:13px}
+.ideia-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:15px;transition:all .15s}
+.ideia-card:hover{border-color:var(--border2)}
+.ideia-titulo{font-weight:600;color:var(--text);font-size:.88rem;margin-bottom:5px}
+.ideia-body{font-size:.8rem;color:var(--text2);line-height:1.55;white-space:pre-wrap}
+.ideia-meta{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.ideia-proj-tag{font-size:.7rem;padding:3px 9px;border-radius:20px;background:rgba(43,59,28,.08);color:var(--darkgreen);font-weight:500}
+.ideia-date{font-size:.7rem;color:var(--text3)}
+.ideia-del{background:none;border:none;color:var(--text3);cursor:pointer;opacity:0;font-size:.85rem}
+.ideia-card:hover .ideia-del{opacity:1}
+.filter-row{display:flex;gap:7px;margin-bottom:18px;flex-wrap:wrap}
+.filter-chip{padding:5px 13px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text2);font-size:.78rem;cursor:pointer;transition:all .15s}
+.filter-chip.active{background:var(--darkgreen);border-color:var(--darkgreen);color:var(--lime)}
+.cal-wrapper{display:grid;grid-template-columns:300px 1fr;gap:18px}
+.cal-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.cal-nav{display:flex;align-items:center;gap:8px}
+.cal-nav button{background:var(--bg3);border:1px solid var(--border);border-radius:7px;color:var(--text2);padding:5px 10px;cursor:pointer;font-size:.86rem;transition:all .15s}
+.cal-nav button:hover{color:var(--text);border-color:var(--darkgreen)}
+.cal-month{font-family:'Fraunces',serif;font-size:.97rem;font-weight:700;color:var(--text);text-align:center;min-width:120px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-dow{text-align:center;font-size:.63rem;font-weight:600;color:var(--text3);text-transform:uppercase;padding:5px 0}
+.cal-day{aspect-ratio:1;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;font-size:.78rem;color:var(--text2);position:relative}
+.cal-day:hover{background:var(--bg3);color:var(--text)}
+.cal-day.today{background:rgba(210,230,123,.3);color:var(--darkgreen);font-weight:700}
+.cal-day.selected{background:var(--darkgreen)!important;color:var(--lime)!important;font-weight:700}
+.cal-day.other-month{opacity:.28}
+.cal-day.has-event::after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--rose)}
+.cal-day.selected.has-event::after{background:var(--lime)}
+.cal-agenda{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.cal-agenda-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cal-sel-date{font-family:'Fraunces',serif;font-size:.95rem;font-weight:700;color:var(--text)}
+.cal-agenda-scroll{max-height:calc(100vh - 200px);overflow-y:auto}
+.agenda-day-group{border-bottom:1px solid var(--border)}
+.agenda-day-group:last-child{border-bottom:none}
+.agenda-day-header{display:flex;align-items:center;gap:12px;padding:12px 18px;background:var(--bg);position:sticky;top:0;z-index:2}
+.agenda-day-num{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--text);line-height:1;min-width:32px}
+.agenda-day-info{flex:1}
+.agenda-day-name{font-size:.78rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
+.agenda-day-full{font-size:.72rem;color:var(--text3)}
+.agenda-day-today-badge{background:var(--lime);color:var(--darkgreen);font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0}
+.agenda-event-row{display:flex;align-items:stretch;gap:0;padding:0 18px 0 18px;min-height:48px}
+.agenda-event-row:last-child{margin-bottom:10px}
+.agenda-event-time-col{width:52px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:3px}
+.agenda-event-time-txt{font-size:.68rem;color:var(--text3);font-weight:500;text-align:center}
+.agenda-event-line{width:2px;flex:1;background:var(--border);border-radius:2px;min-height:10px}
+.agenda-event-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;border:2px solid #fff;box-shadow:0 0 0 2px currentColor}
+.agenda-event-card{flex:1;background:var(--bg2);border-radius:10px;padding:10px 13px;margin:6px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;border-left:3px solid var(--darkgreen);transition:all .15s;cursor:pointer}
+.agenda-event-card:hover{background:var(--bg3)}
+.agenda-event-nome{font-size:.85rem;font-weight:600;color:var(--text)}
+.agenda-event-desc{font-size:.75rem;color:var(--text2);margin-top:2px}
+.agenda-event-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.82rem;padding:2px;flex-shrink:0;opacity:0;transition:opacity .15s}
+.agenda-event-card:hover .agenda-event-del{opacity:1}
+.agenda-empty-day{padding:10px 18px 14px 70px;font-size:.78rem;color:var(--text3)}
+.event-item{padding:10px 12px;background:var(--bg2);border-radius:9px;margin-bottom:7px;border-left:3px solid var(--darkgreen);display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.event-title{font-size:.85rem;color:var(--text);font-weight:500}
+.event-time{font-size:.72rem;color:var(--text2);margin-top:2px}
+.event-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.82rem;padding:2px;flex-shrink:0}
+.wish-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.wish-card{background:var(--card);border:1px solid var(--border);border-radius:13px;overflow:hidden;transition:all .2s;position:relative}
+.wish-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 10px 26px rgba(0,0,0,.09)}
+.wish-card.comprada{opacity:.5}
+.wish-img-wrap{width:100%;aspect-ratio:1;overflow:hidden;background:var(--bg3)}
+.wish-img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.wish-card:hover .wish-img{transform:scale(1.04)}
+.wish-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--text3)}
+.wish-body{padding:12px}
+.wish-nome{font-weight:600;color:var(--text);font-size:.87rem;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wish-preco{font-family:'Fraunces',serif;font-size:1rem;color:var(--darkgreen);font-weight:700;margin-bottom:7px}
+.wish-nota{font-size:.77rem;color:var(--text2);margin-bottom:9px;line-height:1.4}
+.wish-footer{display:flex;align-items:center;justify-content:space-between;gap:5px}
+.wish-cat{font-size:.68rem;padding:3px 8px;border-radius:20px;font-weight:500}
+.cat-desejo{background:rgba(255,195,204,.4);color:#8a3040}.cat-necessidade{background:rgba(210,230,123,.35);color:#3a5a20}
+.cat-estudo{background:rgba(43,59,28,.1);color:var(--darkgreen)}.cat-casa{background:rgba(210,230,123,.25);color:#2a5c2f}.cat-outro{background:rgba(43,59,28,.07);color:var(--text2)}
+.btn-comprada{background:none;border:1px solid var(--border);border-radius:6px;color:var(--text2);padding:3px 8px;font-size:.7rem;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.btn-comprada:hover,.wish-card.comprada .btn-comprada{border-color:var(--darkgreen);color:var(--darkgreen)}
+.wish-check{position:absolute;top:8px;right:8px;background:var(--lime);color:var(--darkgreen);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700}
+.wish-link{display:block;margin-top:7px;font-size:.73rem;color:var(--darkgreen);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wish-link:hover{text-decoration:underline}
+.wish-del{position:absolute;top:7px;left:7px;background:rgba(0,0,0,.55);border:none;border-radius:5px;color:#fff;width:26px;height:26px;cursor:pointer;font-size:.82rem;opacity:0;transition:opacity .15s;display:flex;align-items:center;justify-content:center;z-index:10;line-height:1}
+.wish-card:hover .wish-del{opacity:1}
+.wish-kpis{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.wish-kpi{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:12px 16px}
+.wish-kpi-n{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:700;color:var(--text)}
+.wish-kpi-l{font-size:.72rem;color:var(--text2);margin-top:1px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(3px);padding:16px}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:18px;padding:26px;width:480px;max-width:100%;box-shadow:0 30px 70px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto}
+.modal-title{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.modal-sub{color:var(--text2);font-size:.82rem;margin-bottom:20px}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:.72rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.form-input,.form-textarea,.form-select{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:9px;padding:10px 13px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;transition:border .2s}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--darkgreen)}
+.form-textarea{resize:vertical;min-height:75px}
+.form-select option{background:var(--card)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-footer{display:flex;gap:9px;justify-content:flex-end;margin-top:6px}
+.toast{position:fixed;bottom:20px;right:20px;z-index:300;padding:11px 18px;border-radius:10px;font-size:.84rem;font-weight:500;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.toast.success{background:var(--darkgreen);color:var(--lime)}.toast.error{background:var(--rose);color:#fff}.toast.info{background:var(--lime);color:var(--darkgreen)}
+.empty-state{text-align:center;padding:36px;color:var(--text3)}
+.empty-state p{font-size:.85rem}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(43,59,28,.15);border-radius:10px}
+/* FAB mobile */
+@media(max-width:768px){
+  .fab{
+    position:fixed;bottom:70px;right:16px;
+    width:52px;height:52px;border-radius:50%;
+    background:var(--darkgreen);border:none;
+    color:var(--lime);font-size:1.5rem;
+    box-shadow:0 4px 18px rgba(43,59,28,.35);
+    cursor:pointer;z-index:39;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .15s,opacity .15s;
+  }
+  .fab:active{transform:scale(.92)}
+  .fab.hidden{display:none}
+}
+@media(max-width:768px){
+  :root{--sidebar-w:82vw}
+
+  /* Sidebar como drawer lateral */
+  .sidebar{position:fixed;top:0;bottom:0;left:0;transform:translateX(-100%);z-index:50;padding-bottom:80px}
+  .sidebar.open{transform:translateX(0)}
+  .menu-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:var(--bg2)}
+
+  /* Topbar compacta */
+  .topbar{padding:10px 14px;gap:8px}
+  .topbar-left h1{font-size:1.1rem}
+  .topbar-left p{display:none}
+  .topbar-right .btn-primary{font-size:.78rem;padding:7px 11px}
+
+  /* Conteúdo com espaço para bottom nav */
+  .content{padding:14px 12px 80px}
+
+  /* Grids viram coluna única */
+  .grid-2{grid-template-columns:1fr}
+  .grid-3{grid-template-columns:1fr 1fr}
+  .projeto-detalhe-grid{grid-template-columns:1fr}
+  .cal-wrapper{grid-template-columns:1fr}
+  .kanban{grid-template-columns:1fr}
+  .projetos-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .wish-grid{grid-template-columns:repeat(2,1fr)}
+  .ideias-grid{grid-template-columns:1fr}
+
+  /* Cards mais compactos */
+  .card{padding:14px}
+  .stat-card{padding:12px}
+  .stat-n{font-size:1.5rem}
+
+  /* Atividades mobile */
+  .ativ-header{gap:6px;padding:10px 12px}
+  .ativ-body{padding:0 12px 10px}
+  .ativ-add-task{flex-wrap:wrap}
+  .ativ-add-input[type="date"]{width:100%!important;flex:none}
+
+  /* Calendário mobile */
+  .cal-agenda-scroll{max-height:55vh}
+  .agenda-event-card{padding:8px 10px}
+
+  /* Modal mais largo em mobile */
+  .modal{padding:20px;border-radius:14px}
+  .modal-overlay{padding:12px}
+
+  /* Topbar actions: apenas ícone no mobile */
+  .topbar-right{gap:6px}
+
+  /* Focus card compacto */
+  .focus-card{padding:14px}
+  .focus-input-row{flex-direction:column;gap:6px}
+  .focus-input-row .btn-primary{width:100%;justify-content:center}
+}
+
+/* Bottom Navigation Bar (só mobile) */
+.bottom-nav{display:none}
+@media(max-width:768px){
+  .bottom-nav{
+    display:flex;
+    position:fixed;bottom:0;left:0;right:0;
+    background:var(--darkgreen);
+    border-top:1px solid rgba(210,230,123,.15);
+    z-index:40;
+    padding:6px 0 max(6px,env(safe-area-inset-bottom));
+    box-shadow:0 -4px 20px rgba(0,0,0,.15);
+  }
+  .bn-item{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:3px;cursor:pointer;padding:4px 2px;
+    color:rgba(210,230,123,.45);font-size:.6rem;font-weight:500;
+    transition:color .15s;position:relative;
+  }
+  .bn-item.active{color:var(--lime)}
+  .bn-icon{font-size:1.1rem;line-height:1}
+  .bn-label{font-size:.58rem;letter-spacing:.02em}
+  .bn-dot{
+    position:absolute;top:2px;right:calc(50% - 16px);
+    background:var(--rose);color:#fff;
+    font-size:.55rem;font-weight:700;
+    width:14px;height:14px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .bn-dot.hidden{display:none}
+
+  /* Esconde sidebar no desktop mobile — usa bottom nav */
+  .main{padding-bottom:0}
+}
+
+@media(max-width:420px){
+  .grid-3{grid-template-columns:1fr}
+  .wish-grid{grid-template-columns:1fr 1fr}
+  .tab-btn{font-size:.7rem;padding:6px 2px}
+  .topbar-left h1{font-size:1rem}
+  .stat-n{font-size:1.3rem}
+  .bn-label{display:none}
+  .bn-icon{font-size:1.25rem}
+}
+</style>
+</head>
+<body>
+
+<div id="auth-screen">
+  <div class="auth-glow"></div>
+  <div class="auth-card">
+    <div class="auth-logo">Meu Espaço</div>
+    <div class="auth-tagline">Seu centro de comando pessoal</div>
+    <label>Email</label>
+    <input type="email" id="auth-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')doLogin()">
+    <label>Senha</label>
+    <input type="password" id="auth-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="auth-err" id="auth-err"></div>
+    <button class="btn-auth" onclick="doLogin()">Entrar</button>
+  </div>
+</div>
+
+<div id="setup-screen" class="setup-screen hidden">
+  <div class="setup-card">
+    <div class="setup-title">Bem-vindo, Cauã!</div>
+    <div class="setup-sub">Configurando seu espaço...</div>
+    <button class="btn-save" style="width:100%;padding:13px;font-size:.95rem;margin-top:10px" onclick="saveSetup()">Começar →</button>
+  </div>
+</div>
+
+<div id="app" class="app hidden">
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">Meu Espaço <span>de Cauã</span></div>
+    <div class="nav-section">
+      <div class="nav-label">Principal</div>
+      <div class="nav-item active" data-page="dashboard" onclick="App.navigate('dashboard')"><span class="nav-dot"></span><span>Dashboard</span></div>
+      <div class="nav-item" data-page="tarefas" onclick="App.navigate('tarefas')"><span class="nav-dot"></span><span>Tarefas</span><span class="nav-badge hidden" id="badge-tarefas">0</span></div>
+      <div class="nav-item" data-page="projetos" onclick="App.navigate('projetos')"><span class="nav-dot"></span><span>Projetos</span></div>
+      <div class="nav-item" data-page="ideias" onclick="App.navigate('ideias')"><span class="nav-dot"></span><span>Ideias</span></div>
+      <div class="nav-item" data-page="calendario" onclick="App.navigate('calendario')"><span class="nav-dot"></span><span>Calendário</span></div>
+      <div class="nav-item" data-page="wishlist" onclick="App.navigate('wishlist')"><span class="nav-dot"></span><span>Wishlist</span></div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar">C</div>
+        <span>Cauã</span>
+        <button class="btn-logout" onclick="doLogout()">Sair</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" onclick="openSidebar()">☰</button>
+        <div><h1 id="page-title">Dashboard</h1><p id="page-sub"></p></div>
+      </div>
+      <div class="topbar-right" id="topbar-actions"></div>
+    </div>
+    <div class="content" id="page-content"></div>
+  </main>
+</div>
+
+<!-- FAB mobile -->
+<button class="fab hidden" id="fab-btn" onclick="fabAction()">+</button>
+
+<!-- Bottom Navigation (mobile) -->
+<nav class="bottom-nav" id="bottom-nav">
+  <div class="bn-item active" data-page="dashboard" onclick="App.navigate('dashboard')">
+    <span class="bn-icon">🏠</span><span class="bn-label">Início</span>
+  </div>
+  <div class="bn-item" data-page="tarefas" onclick="App.navigate('tarefas')">
+    <span class="bn-icon">✓</span><span class="bn-label">Tarefas</span>
+    <span class="bn-dot hidden" id="bn-badge">0</span>
+  </div>
+  <div class="bn-item" data-page="projetos" onclick="App.navigate('projetos')">
+    <span class="bn-icon">◎</span><span class="bn-label">Projetos</span>
+  </div>
+  <div class="bn-item" data-page="calendario" onclick="App.navigate('calendario')">
+    <span class="bn-icon">📅</span><span class="bn-label">Agenda</span>
+  </div>
+  <div class="bn-item" data-page="wishlist" onclick="App.navigate('wishlist')">
+    <span class="bn-icon">★</span><span class="bn-label">Wishlist</span>
+  </div>
+</nav>
+
+<div id="modal-overlay" class="modal-overlay hidden" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-sub" id="modal-sub"></div>
+    <div id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+<div id="toast" class="toast hidden"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL='https://nvtyvueqrrcimucuhcze.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dHl2dWVxcnJjaW11Y3VoY3plIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NDU3OTIsImV4cCI6MjA5MjAyMTc5Mn0.XwGY7zFzYJOySKFMPWApCBg3ITm8fvKybILxxke511Q';
+let _sb=null;
+function getSB(){if(!_sb)_sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);return _sb;}
+
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const isoHoje=()=>new Date().toISOString().slice(0,10);
+const brDate=iso=>{if(!iso)return'';const[y,m,d]=iso.split('-');return`${d}/${m}/${y}`;};
+
+// Verifica se prazo está vencido ou próximo (<=3 dias)
+function statusPrazo(iso){
+  if(!iso)return null;
+  const hoje=new Date(isoHoje());
+  const prazo=new Date(iso);
+  const diff=Math.ceil((prazo-hoje)/(1000*60*60*24));
+  if(diff<0)return'vencido';
+  if(diff<=3)return'proximo';
+  return'ok';
+}
+
+function toast(msg,tipo='success'){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className=`toast ${tipo}`;el.classList.remove('hidden');
+  clearTimeout(el._t);el._t=setTimeout(()=>el.classList.add('hidden'),3000);
+}
+function openModal(titulo,sub,body,footer=''){
+  document.getElementById('modal-title').textContent=titulo;
+  document.getElementById('modal-sub').textContent=sub||'';
+  document.getElementById('modal-body').innerHTML=body;
+  document.getElementById('modal-footer').innerHTML=footer;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+  setTimeout(()=>{const f=document.querySelector('#modal-body input,#modal-body textarea');if(f)f.focus();},60);
+}
+function closeModal(){document.getElementById('modal-overlay').classList.add('hidden');}
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebar-overlay').classList.add('show');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('show');}
+
+// AUTH
+async function doLogin(){
+  const email=document.getElementById('auth-email').value.trim();
+  const pass=document.getElementById('auth-pass').value;
+  const err=document.getElementById('auth-err');
+  err.style.display='none';
+  if(!email||!pass){err.textContent='Preencha todos os campos.';err.style.display='block';return;}
+  const{error}=await getSB().auth.signInWithPassword({email,password:pass});
+  if(error){err.textContent='Email ou senha incorretos.';err.style.display='block';}
+}
+async function doLogout(){await getSB().auth.signOut();}
+
+let _appIniciado=false;
+async function iniciarApp(session){
+  if(_appIniciado)return;
+  _appIniciado=true;
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('setup-screen').classList.add('hidden');
+  document.getElementById('app').classList.add('hidden');
+  try{
+    let prof=null;
+    try{const{data}=await getSB().from('meu_espaco_perfil').select('*').eq('user_id',session.user.id).maybeSingle();prof=data;}catch(e){}
+    if(!prof||!prof.nome){
+      // Auto-setup com nome Cauã
+      await getSB().from('meu_espaco_perfil').upsert({user_id:session.user.id,nome:'Cauã'},{onConflict:'user_id'});
+      prof={nome:'Cauã'};
+    }
+    document.getElementById('app').classList.remove('hidden');
+    await App.init(session,prof);
+  }catch(e){console.error(e);_appIniciado=false;document.getElementById('auth-screen').style.display='flex';}
+}
+
+async function saveSetup(){
+  const{data:{session}}=await getSB().auth.getSession();
+  const{error}=await getSB().from('meu_espaco_perfil').upsert({user_id:session.user.id,nome:'Cauã'},{onConflict:'user_id'});
+  if(error){toast('Erro ao salvar','error');return;}
+  _appIniciado=false;document.getElementById('setup-screen').classList.add('hidden');
+  await iniciarApp(session);
+}
+
+window.addEventListener('load',async()=>{
+  try{
+    getSB().auth.onAuthStateChange(async(event,session)=>{
+      if(event==='SIGNED_OUT'){_appIniciado=false;document.getElementById('auth-screen').style.display='flex';document.getElementById('app').classList.add('hidden');document.getElementById('setup-screen').classList.add('hidden');}
+    });
+    const{data:{session}}=await getSB().auth.getSession();
+    if(session)await iniciarApp(session);
+    else document.getElementById('auth-screen').style.display='flex';
+  }catch(e){console.error(e);document.getElementById('auth-screen').style.display='flex';}
+});
+
+// STATE
+const State={
+  user:null,perfil:null,
+  tarefas:[],projetos:[],atividades:[],ativTarefas:[],ideias:[],eventos:[],compras:[],foco:null,
+  calMes:new Date().getMonth(),calAno:new Date().getFullYear(),calDiaSel:isoHoje(),
+  projetoAtual:null,tarefaTab:'diaria',ideiasFilter:'todos',wishFilter:'todos',
+  ativExpanded:{}
+};
+
+async function loadAll(){
+  const userId=State.user.id;
+  const[tR,pR,aR,atR,iR,eR,fR,cR]=await Promise.all([
+    getSB().from('meu_espaco_tarefas').select('*').eq('user_id',userId).order('created_at'),
+    getSB().from('meu_espaco_projetos').select('*').eq('user_id',userId).order('created_at'),
+    getSB().from('meu_espaco_atividades').select('*').eq('user_id',userId).order('created_at'),
+    getSB().from('meu_espaco_ativ_tarefas').select('*').eq('user_id',userId).order('created_at'),
+    getSB().from('meu_espaco_ideias').select('*').eq('user_id',userId).order('created_at',{ascending:false}),
+    getSB().from('meu_espaco_eventos').select('*').eq('user_id',userId),
+    getSB().from('meu_espaco_foco').select('*').eq('user_id',userId).eq('data',isoHoje()).maybeSingle(),
+    getSB().from('meu_espaco_compras').select('*').eq('user_id',userId).order('created_at',{ascending:false}),
+  ]);
+  State.tarefas=tR.data||[];State.projetos=pR.data||[];
+  State.atividades=aR.data||[];State.ativTarefas=atR.data||[];
+  State.ideias=iR.data||[];State.eventos=eR.data||[];
+  State.foco=fR.data;State.compras=cR.data||[];
+  updateBadge();
+}
+
+function updateBadge(){
+  const n=State.tarefas.filter(t=>!t.concluida&&t.tipo==='diaria').length;
+  const el=document.getElementById('badge-tarefas');
+  const bn=document.getElementById('bn-badge');
+  if(el){el.textContent=n;el.classList.toggle('hidden',n===0);}
+  if(bn){bn.textContent=n;bn.classList.toggle('hidden',n===0);}
+}
+
+function fabAction(){
+  const p=App.current;
+  if(p==='tarefas')modalNovaTarefa();
+  else if(p==='projetos'){if(State.projetoAtual)modalNovaAtividade(State.projetoAtual);else modalNovoProjeto();}
+  else if(p==='ideias')modalNovaIdeia();
+  else if(p==='calendario')modalNovoEvento();
+  else if(p==='wishlist')modalNovaWish();
+}
+
+const PROJ_CORES=['#7eb87e','#e8a598','#f0c96e','#89b4d4','#c9a4d4','#d4b896','#a8c8a0','#e8b4c8','#94c4b8','#f0b87e'];
+
+const App={
+  current:'dashboard',
+  async init(session,perfil){
+    State.user=session.user;State.perfil=perfil;
+    await loadAll();this.navigate('dashboard');
+  },
+  navigate(page){
+    this.current=page;closeSidebar();
+    if(!document.getElementById('page-content'))return;
+    document.querySelectorAll('.nav-item').forEach(i=>i.classList.toggle('active',i.dataset.page===page));
+    document.querySelectorAll('.bn-item').forEach(i=>i.classList.toggle('active',i.dataset.page===page));
+    const T={dashboard:['Dashboard','Seu centro de comando'],tarefas:['Tarefas','Diárias, semanais, mensais e recorrentes'],projetos:['Projetos','Acompanhe seu progresso'],ideias:['Ideias','Registre suas ideias'],calendario:['Calendário','Sua agenda'],wishlist:['Wishlist','Itens que você quer comprar']};
+    const[t,s]=T[page]||[page,''];
+    document.getElementById('page-title').textContent=t;
+    document.getElementById('page-sub').textContent=s;
+    const R={dashboard:renderDashboard,tarefas:renderTarefas,projetos:renderProjetos,ideias:renderIdeias,calendario:renderCalendario,wishlist:renderWishlist};
+    if(R[page])R[page]();
+    // FAB: mostra em todas as páginas exceto dashboard
+    const fab=document.getElementById('fab-btn');
+    if(fab)fab.classList.toggle('hidden',page==='dashboard');
+  },
+  async refresh(){await loadAll();this.navigate(this.current);}
+};
+
+// DASHBOARD
+function renderDashboard(){
+  const c=document.getElementById('page-content');
+  document.getElementById('topbar-actions').innerHTML='';
+  const hoje=isoHoje();
+  const td=State.tarefas.filter(t=>t.tipo==='diaria');
+  const ativos=State.projetos.filter(p=>p.status==='ativo').length;
+  const evHoje=State.eventos.filter(e=>e.data===hoje);
+  const hora=new Date().getHours();
+  const sau=hora<12?'Bom dia':hora<18?'Boa tarde':'Boa noite';
+  const pendentes=td.filter(t=>!t.concluida).slice(0,5);
+
+  // Tarefas de atividades com prazo hoje ou vencidas
+  const ativPendHoje=State.ativTarefas.filter(t=>{
+    if(t.concluida)return false;
+    if(!t.data_vencimento)return false;
+    return t.data_vencimento<=hoje;
+  }).length;
+
+  c.innerHTML=`
+  <div class="focus-card">
+    <div class="focus-title">${sau}, Cauã!</div>
+    <div style="font-size:.8rem;color:var(--text2);margin-bottom:10px">${new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'})}</div>
+    <div style="font-size:.8rem;color:var(--text2);margin-bottom:8px">Foco de hoje</div>
+    <div class="focus-input-row">
+      <input class="focus-input" id="foco-input" placeholder="Qual é o seu foco hoje?" value="${State.foco?.texto||''}">
+      <button class="btn-primary" onclick="saveFoco()">Salvar</button>
+    </div>
+  </div>
+  <div class="grid-3">
+    <div class="stat-card"><div class="stat-icon">✓</div><div><div class="stat-n">${td.filter(t=>t.concluida).length}/${td.length}</div><div class="stat-l">Tarefas hoje</div><div class="stat-sub">${td.filter(t=>!t.concluida).length} pendentes</div></div></div>
+    <div class="stat-card"><div class="stat-icon">◎</div><div><div class="stat-n">${ativos}</div><div class="stat-l">Projetos ativos</div><div class="stat-sub">${State.projetos.length} no total</div></div></div>
+    <div class="stat-card"><div class="stat-icon">◻</div><div><div class="stat-n">${evHoje.length}</div><div class="stat-l">Eventos hoje</div>${ativPendHoje>0?`<div class="stat-sub" style="color:var(--rose)">${ativPendHoje} tarefa${ativPendHoje!==1?'s':''} de projeto vencida${ativPendHoje!==1?'s':''}</div>`:''}</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="section-header"><div class="section-title">Para hoje</div><button class="btn-secondary" onclick="App.navigate('tarefas')">Ver todas</button></div>
+      ${pendentes.length===0
+        ?`<div class="empty-state"><p>${td.length>0?'Tudo concluído! 🎉':'Nenhuma tarefa para hoje.'}</p></div>`
+        :pendentes.map(t=>`<div class="task-item"><div class="task-check ${t.concluida?'done':''}" onclick="toggleTarefa('${t.id}')"></div><div class="task-prio p-${t.prioridade||'media'}"></div><span class="task-text ${t.concluida?'done':''}">${t.texto}</span></div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="section-header"><div class="section-title">Hoje — ${new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})}</div><button class="btn-secondary" onclick="App.navigate('calendario')">Agenda</button></div>
+      ${evHoje.length===0
+        ?`<div class="empty-state"><p>Nenhum evento hoje.</p></div>`
+        :evHoje.map(e=>`<div class="event-item" style="border-left-color:${e.cor||'var(--darkgreen)'}"><div><div class="event-title">${e.titulo}</div>${e.horario?`<div class="event-time">${e.horario}</div>`:''}</div></div>`).join('')}
+    </div>
+  </div>
+  ${State.projetos.filter(p=>p.status==='ativo').length>0?`
+  <div class="card">
+    <div class="section-header"><div class="section-title">Projetos ativos</div><button class="btn-secondary" onclick="App.navigate('projetos')">Ver todos</button></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:4px">
+      ${State.projetos.filter(p=>p.status==='ativo').slice(0,4).map(p=>`
+        <div style="padding:14px;background:var(--bg2);border-radius:10px;cursor:pointer;border-left:3px solid ${p.cor||'var(--darkgreen)'}" onclick="State.projetoAtual='${p.id}';App.navigate('projetos')">
+          <div style="font-weight:600;font-size:.87rem;margin-bottom:8px">${p.nome}</div>
+          <div class="progress-bar-wrap"><div class="progress-bar" style="width:${p.progresso||0}%;background:${p.cor||'var(--darkgreen)'}"></div></div>
+          <div style="font-size:.73rem;color:var(--text2);margin-top:5px">${p.progresso||0}%</div>
+        </div>`).join('')}
+    </div>
+  </div>`:''}`;
+}
+
+async function saveFoco(){
+  const texto=document.getElementById('foco-input').value.trim();
+  if(!texto)return;
+  const{error}=await getSB().from('meu_espaco_foco').upsert({user_id:State.user.id,data:isoHoje(),texto},{onConflict:'user_id,data'});
+  if(error){toast('Erro','error');return;}
+  State.foco={texto};toast('Foco salvo!');
+}
+
+// TAREFAS
+function renderTarefas(){
+  const c=document.getElementById('page-content');
+  document.getElementById('topbar-actions').innerHTML=`<button class="btn-primary" onclick="modalNovaTarefa()">+ Nova tarefa</button>`;
+  const tipo=State.tarefaTab;
+  const lista=State.tarefas.filter(t=>t.tipo===tipo);
+  const pend=lista.filter(t=>!t.concluida);
+  const done=lista.filter(t=>t.concluida);
+
+  c.innerHTML=`
+  <div class="card" style="max-width:680px;margin:0 auto">
+    <div class="tab-row">
+      <button class="tab-btn ${tipo==='diaria'?'active':''}" onclick="setTab('diaria')">Diária</button>
+      <button class="tab-btn ${tipo==='semanal'?'active':''}" onclick="setTab('semanal')">Semanal</button>
+      <button class="tab-btn ${tipo==='mensal'?'active':''}" onclick="setTab('mensal')">Mensal</button>
+      <button class="tab-btn ${tipo==='recorrente'?'active':''}" onclick="setTab('recorrente')">Recorrente</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div style="font-size:.8rem;color:var(--text2)">${pend.length} pendente${pend.length!==1?'s':''} · ${done.length} concluída${done.length!==1?'s':''}</div>
+      ${done.length>0?`<button class="btn-secondary" style="font-size:.75rem;padding:4px 10px" onclick="limparConcluidas('${tipo}')">Limpar concluídas</button>`:''}
+    </div>
+    ${pend.length===0&&done.length===0?`<div class="empty-state"><p>Nenhuma tarefa. Adicione uma abaixo!</p></div>`:''}
+    ${pend.map(t=>renderTaskItem(t)).join('')}
+    ${done.length>0?`<div style="color:var(--text3);font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;padding:10px 0 7px;margin-top:6px;border-top:1px solid var(--border)">Concluídas</div>${done.map(t=>renderTaskItem(t)).join('')}`:''}
+    <div class="add-task-row" style="margin-top:16px">
+      <input class="add-task-input" id="qtask-input" placeholder="Tarefa rápida... (Enter)" onkeydown="if(event.key==='Enter')quickAdd()">
+      <button class="btn-add" onclick="quickAdd()">+</button>
+    </div>
+  </div>`;
+}
+
+function renderTaskItem(t){
+  const proj=State.projetos.find(p=>p.id===t.projeto_id);
+  return`<div class="task-item" id="task-${t.id}">
+    <div class="task-check ${t.concluida?'done':''}" onclick="toggleTarefa('${t.id}')"></div>
+    <div class="task-prio p-${t.prioridade||'media'}"></div>
+    <span class="task-text ${t.concluida?'done':''}">${t.texto}</span>
+    ${proj?`<span style="font-size:.68rem;padding:2px 7px;border-radius:10px;background:${proj.cor||'var(--bg3)'};color:var(--text);flex-shrink:0;opacity:.8">${proj.nome}</span>`:''}
+    ${t.tipo==='recorrente'&&t.recorrencia_periodo?`<span class="task-rec">a cada ${t.recorrencia_periodo}d</span>`:''}
+    ${t.data_vencimento?`<span class="task-date">${brDate(t.data_vencimento)}</span>`:''}
+    <button class="task-del" onclick="deletarTarefa('${t.id}')">✕</button>
+  </div>`;
+}
+
+function setTab(tipo){State.tarefaTab=tipo;renderTarefas();}
+
+async function toggleTarefa(id){
+  const t=State.tarefas.find(x=>x.id===id);if(!t)return;
+  const{error}=await getSB().from('meu_espaco_tarefas').update({concluida:!t.concluida}).eq('id',id);
+  if(error){toast('Erro','error');return;}
+  t.concluida=!t.concluida;updateBadge();
+  const el=document.getElementById(`task-${id}`);
+  if(el){el.querySelector('.task-check').classList.toggle('done',t.concluida);el.querySelector('.task-text').classList.toggle('done',t.concluida);}
+}
+
+async function quickAdd(){
+  const inp=document.getElementById('qtask-input');
+  const texto=inp.value.trim();if(!texto)return;
+  const nova={id:uid(),user_id:State.user.id,texto,tipo:State.tarefaTab,prioridade:'media',concluida:false};
+  const{error}=await getSB().from('meu_espaco_tarefas').insert(nova);
+  if(error){toast('Erro: '+error.message,'error');return;}
+  State.tarefas.push(nova);inp.value='';updateBadge();renderTarefas();
+}
+
+async function deletarTarefa(id){
+  await getSB().from('meu_espaco_tarefas').delete().eq('id',id);
+  State.tarefas=State.tarefas.filter(t=>t.id!==id);updateBadge();renderTarefas();
+}
+
+async function limparConcluidas(tipo){
+  const ids=State.tarefas.filter(t=>t.concluida&&t.tipo===tipo).map(t=>t.id);
+  if(!ids.length)return;
+  await getSB().from('meu_espaco_tarefas').delete().in('id',ids);
+  State.tarefas=State.tarefas.filter(t=>!(t.concluida&&t.tipo===tipo));
+  updateBadge();renderTarefas();
+}
+
+function modalNovaTarefa(projetoId){
+  const projs=State.projetos.map(p=>`<option value="${p.id}" ${p.id===projetoId?'selected':''}>${p.nome}</option>`).join('');
+  openModal('Nova tarefa','',
+    `<div class="form-group"><label class="form-label">Texto</label><input type="text" class="form-input" id="m-t-texto" placeholder="Descrição..."></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Tipo</label>
+        <select class="form-select" id="m-t-tipo" onchange="toggleRecField()">
+          <option value="diaria" ${State.tarefaTab==='diaria'?'selected':''}>Diária</option>
+          <option value="semanal" ${State.tarefaTab==='semanal'?'selected':''}>Semanal</option>
+          <option value="mensal" ${State.tarefaTab==='mensal'?'selected':''}>Mensal</option>
+          <option value="recorrente" ${State.tarefaTab==='recorrente'?'selected':''}>Recorrente</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Prioridade</label>
+        <select class="form-select" id="m-t-prio"><option value="alta">Alta</option><option value="media" selected>Média</option><option value="baixa">Baixa</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Data de vencimento</label><input type="date" class="form-input" id="m-t-data"></div>
+      <div class="form-group" id="rec-wrap" style="display:${State.tarefaTab==='recorrente'?'block':'none'}"><label class="form-label">Repetir a cada (dias)</label><input type="number" class="form-input" id="m-t-periodo" placeholder="Ex: 7" min="1"></div>
+    </div>
+    ${projs?`<div class="form-group"><label class="form-label">Projeto</label><select class="form-select" id="m-t-proj"><option value="">— nenhum —</option>${projs}</select></div>`:''}`,
+    `<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="salvarTarefa('${projetoId||''}')">Adicionar</button>`
+  );
+}
+
+function toggleRecField(){
+  const v=document.getElementById('m-t-tipo').value;
+  const w=document.getElementById('rec-wrap');
+  if(w)w.style.display=v==='recorrente'?'block':'none';
+}
+
+async function salvarTarefa(projetoId){
+  const texto=document.getElementById('m-t-texto').value.trim();
+  const tipo=document.getElementById('m-t-tipo').value;
+  const prio=document.getElementById('m-t-prio').value;
+  const data=document.getElementById('m-t-data').value||null;
+  const per=document.getElementById('m-t-periodo')?.value||null;
+  const proj=document.getElementById('m-t-proj')?.value||projetoId||null;
+  if(!texto){toast('Digite o texto!','error');return;}
+  const novaCompleta={id:uid(),user_id:State.user.id,texto,tipo,prioridade:prio,concluida:false,data_vencimento:data,recorrencia_periodo:per?parseInt(per):null,projeto_id:proj||null};
+  const novaSimples={id:novaCompleta.id,user_id:State.user.id,texto,tipo,prioridade:prio,concluida:false};
+  let{error}=await getSB().from('meu_espaco_tarefas').insert(novaCompleta);
+  if(error&&error.message&&error.message.includes('column')){
+    const r2=await getSB().from('meu_espaco_tarefas').insert(novaSimples);
+    error=r2.error;
+    if(!error){State.tarefas.push(novaSimples);}
+  } else if(!error){
+    State.tarefas.push(novaCompleta);
+  }
+  if(error){toast('Erro: '+error.message,'error');return;}
+  closeModal();updateBadge();
+  if(projetoId)renderProjetoDetalhe(projetoId);else renderTarefas();
+  toast('Tarefa adicionada!');
+}
+
+// PROJETOS
+function renderProjetos(){
+  const c=document.getElementById('page-content');
+  document.getElementById('topbar-actions').innerHTML=`<button class="btn-primary" onclick="modalNovoProjeto()">+ Novo projeto</button>`;
+  if(State.projetoAtual){renderProjetoDetalhe(State.projetoAtual);return;}
+  if(!State.projetos.length){c.innerHTML=`<div class="empty-state" style="padding:80px"><p>Nenhum projeto ainda.</p></div>`;return;}
+  c.innerHTML=`<div class="projetos-grid">${State.projetos.map(p=>renderProjetoCard(p)).join('')}</div>`;
+}
+
+function renderProjetoCard(p){
+  const sm={ativo:'s-ativo',pausado:'s-pausado',concluido:'s-concluido',planejado:'s-planejado'}[p.status]||'s-planejado';
+  const sl={ativo:'Ativo',pausado:'Pausado',concluido:'Concluído',planejado:'Planejado'}[p.status]||'Planejado';
+  const cor=p.cor||'#7eb87e';
+  const ativs=State.atividades.filter(a=>a.projeto_id===p.id);
+  const tarefasAtiv=State.ativTarefas.filter(t=>ativs.some(a=>a.id===t.atividade_id));
+  const concluidas=tarefasAtiv.filter(t=>t.concluida).length;
+  return`<div class="projeto-card" onclick="abrirProjeto('${p.id}')">
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:${cor};border-radius:14px 14px 0 0"></div>
+    <div class="projeto-actions">
+      <button class="btn-icon" onclick="event.stopPropagation();editarProjeto('${p.id}')">✏</button>
+      <button class="btn-icon" onclick="event.stopPropagation();deletarProjeto('${p.id}')">✕</button>
+    </div>
+    <div class="projeto-meta" style="margin-bottom:8px"><span class="projeto-status ${sm}">${sl}</span>${p.data_prazo?`<span style="font-size:.7rem;color:var(--text3)">prazo: ${brDate(p.data_prazo)}</span>`:''}</div>
+    <div class="projeto-nome">${p.nome}</div>
+    <div class="projeto-desc">${p.descricao||'Sem descrição'}</div>
+    <div class="progress-bar-wrap"><div class="progress-bar" style="width:${p.progresso||0}%;background:${cor}"></div></div>
+    <div class="projeto-meta" style="margin-top:7px"><span>${p.progresso||0}%</span><span>${ativs.length} atividade${ativs.length!==1?'s':''} · ${tarefasAtiv.length} tarefa${tarefasAtiv.length!==1?'s':''}</span></div>
+  </div>`;
+}
+
+function abrirProjeto(id){State.projetoAtual=id;renderProjetos();}
+
+function renderProjetoDetalhe(id){
+  const p=State.projetos.find(x=>x.id===id);if(!p)return;
+  const c=document.getElementById('page-content');
+  const cor=p.cor||'#7eb87e';
+  const ativs=State.atividades.filter(a=>a.projeto_id===id);
+  const ideiasP=State.ideias.filter(i=>i.projeto_id===id);
+  const sm={ativo:'s-ativo',pausado:'s-pausado',concluido:'s-concluido',planejado:'s-planejado'}[p.status]||'s-planejado';
+  const sl={ativo:'Ativo',pausado:'Pausado',concluído:'Concluído',planejado:'Planejado'}[p.status]||p.status;
+
+  // Stats das atividades
+  const todasTarefas=State.ativTarefas.filter(t=>ativs.some(a=>a.id===t.atividade_id));
+  const concl=todasTarefas.filter(t=>t.concluida).length;
+
+  c.innerHTML=`
+  <button class="back-btn" onclick="State.projetoAtual=null;renderProjetos()">← Voltar</button>
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;gap:12px;flex-wrap:wrap">
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+        <div style="width:12px;height:12px;border-radius:50%;background:${cor};flex-shrink:0"></div>
+        <div style="font-family:'Fraunces',serif;font-size:1.7rem;font-weight:700">${p.nome}</div>
+        <span class="projeto-status ${sm}">${sl}</span>
+      </div>
+      ${p.descricao?`<div style="color:var(--text2);font-size:.88rem">${p.descricao}</div>`:''}
+    </div>
+    <button class="btn-secondary" onclick="editarProjeto('${id}')">Editar</button>
+  </div>
+  <div class="projeto-detalhe-grid">
+    <div>
+      <!-- PROGRESSO -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="section-header"><div class="section-title">Progresso</div><span class="progress-value" id="prog-val">${p.progresso||0}%</span></div>
+        <div class="progress-bar-wrap" style="height:8px"><div class="progress-bar" id="prog-bar" style="width:${p.progresso||0}%;background:${cor};height:8px"></div></div>
+        <input type="range" class="progress-slider" min="0" max="100" value="${p.progresso||0}"
+          oninput="document.getElementById('prog-val').textContent=this.value+'%';document.getElementById('prog-bar').style.width=this.value+'%'"
+          onchange="salvarProgresso('${id}',this.value)">
+        ${todasTarefas.length>0?`<div style="font-size:.75rem;color:var(--text2);margin-top:8px">${concl} de ${todasTarefas.length} tarefas concluídas</div>`:''}
+      </div>
+
+      <!-- ATIVIDADES -->
+      <div class="card">
+        <div class="section-header">
+          <div class="section-title">Atividades</div>
+          <button class="btn-secondary" style="font-size:.76rem;padding:5px 10px" onclick="modalNovaAtividade('${id}')">+ Atividade</button>
+        </div>
+        ${ativs.length===0
+          ?`<div class="empty-state"><p>Nenhuma atividade. Crie uma para organizar as tarefas!</p></div>`
+          :ativs.map(a=>renderAtivBloco(a,id)).join('')
+        }
+      </div>
+    </div>
+
+    <!-- PAINEL LATERAL -->
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="section-title" style="margin-bottom:12px">Informações</div>
+        ${p.data_prazo?`
+          <div style="margin-bottom:12px">
+            <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">Prazo do projeto</div>
+            <div style="font-family:'Fraunces',serif;font-size:1.15rem;font-weight:700;color:${cor}">${brDate(p.data_prazo)}</div>
+            ${(()=>{const st=statusPrazo(p.data_prazo);return st==='vencido'?`<div style="font-size:.72rem;color:var(--rose);margin-top:2px">⚠ Prazo vencido</div>`:st==='proximo'?`<div style="font-size:.72rem;color:var(--amber);margin-top:2px">⏰ Vence em breve</div>`:''})()}
+          </div>
+        `:''}
+        <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Status das tarefas</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <div style="text-align:center;background:var(--bg2);border-radius:8px;padding:8px 12px;flex:1">
+            <div style="font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:var(--text)">${todasTarefas.filter(t=>!t.concluida).length}</div>
+            <div style="font-size:.7rem;color:var(--text2)">pendentes</div>
+          </div>
+          <div style="text-align:center;background:rgba(46,110,56,.08);border-radius:8px;padding:8px 12px;flex:1">
+            <div style="font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:var(--emerald)">${concl}</div>
+            <div style="font-size:.7rem;color:var(--text2)">concluídas</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="section-header"><div class="section-title">Tarefas avulsas</div><button class="btn-secondary" style="font-size:.76rem;padding:5px 10px" onclick="modalNovaTarefa('${id}')">+ Adicionar</button></div>
+        ${(()=>{
+          const tarefasP=State.tarefas.filter(t=>t.projeto_id===id);
+          const pend=tarefasP.filter(t=>!t.concluida);
+          const done=tarefasP.filter(t=>t.concluida);
+          if(!tarefasP.length)return`<div class="empty-state"><p>Nenhuma tarefa avulsa.</p></div>`;
+          return`<div class="kanban">
+            <div class="kanban-col">
+              <div class="kanban-col-title">A fazer <span class="kanban-count">${pend.length}</span></div>
+              ${pend.length===0?`<div style="font-size:.78rem;color:var(--text3);text-align:center;padding:12px">Tudo feito!</div>`:
+                pend.map(t=>`<div class="kanban-task">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+                    <div style="width:17px;height:17px;border-radius:4px;border:2px solid var(--border2);cursor:pointer;flex-shrink:0" onclick="toggleTarefa('${t.id}');setTimeout(()=>{if(State.projetoAtual)renderProjetoDetalhe('${id}');},300)"></div>
+                    <div class="task-prio p-${t.prioridade||'media'}"></div>
+                  </div>
+                  <div class="kanban-task-text">${t.texto}</div>
+                  ${t.data_vencimento?`<div style="font-size:.71rem;color:var(--text3);margin-top:4px">${brDate(t.data_vencimento)}</div>`:''}
+                </div>`).join('')}
+            </div>
+            <div class="kanban-col" style="background:rgba(46,110,56,.05)">
+              <div class="kanban-col-title" style="color:var(--emerald)">Concluídas <span class="kanban-count">${done.length}</span></div>
+              ${done.length===0?`<div style="font-size:.78rem;color:var(--text3);text-align:center;padding:12px">Nenhuma ainda.</div>`:
+                done.map(t=>`<div class="kanban-task" style="opacity:.65">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+                    <div style="width:17px;height:17px;border-radius:4px;background:var(--darkgreen);border:2px solid var(--darkgreen);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center" onclick="toggleTarefa('${t.id}');setTimeout(()=>{if(State.projetoAtual)renderProjetoDetalhe('${id}');},300)"><span style="color:var(--lime);font-size:.6rem;font-weight:700">✓</span></div>
+                  </div>
+                  <div class="kanban-task-text done">${t.texto}</div>
+                </div>`).join('')}
+            </div>
+          </div>`;
+        })()}
+      </div>
+
+      <div class="card">
+        <div class="section-header"><div class="section-title">Ideias</div><button class="btn-secondary" style="font-size:.76rem;padding:5px 10px" onclick="modalNovaIdeia('${id}')">+ Ideia</button></div>
+        ${ideiasP.length===0?`<div class="empty-state"><p>Nenhuma ideia.</p></div>`:
+          ideiasP.map(i=>`<div class="ideia-card" style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start">
+              <div class="ideia-titulo">${i.titulo}</div>
+              <button style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:.85rem" onclick="deletarIdeia('${i.id}')">✕</button>
+            </div>
+            <div class="ideia-body">${i.conteudo||''}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+// =================== ATIVIDADES ===================
+
+function renderAtivBloco(a, projetoId){
+  const tarefas=State.ativTarefas.filter(t=>t.atividade_id===a.id);
+  const pend=tarefas.filter(t=>!t.concluida);
+  const done=tarefas.filter(t=>t.concluida);
+  const isOpen=!!State.ativExpanded[a.id];
+  const sp=statusPrazo(a.data_prazo);
+  const prazoCls=sp==='vencido'?'vencido':sp==='proximo'?'proximo':'';
+  const prazoLabel=a.data_prazo?brDate(a.data_prazo):'sem prazo';
+
+  return`<div class="ativ-bloco" id="ativ-${a.id}">
+    <div class="ativ-header" onclick="toggleAtiv('${a.id}')">
+      <span class="ativ-expand-icon ${isOpen?'open'}">▶</span>
+      <div style="flex:1;min-width:0">
+        <div class="ativ-nome">${a.nome}</div>
+        ${a.descricao?`<div style="font-size:.73rem;color:var(--text3);margin-top:1px">${a.descricao}</div>`:''}
+      </div>
+      <span class="ativ-progresso-mini">${done.length}/${tarefas.length}</span>
+      <span class="ativ-prazo-badge ${prazoCls}">📅 ${prazoLabel}</span>
+      <button class="btn-icon" style="font-size:.73rem;padding:3px 7px" onclick="event.stopPropagation();editarAtividade('${a.id}')">✏</button>
+      <button class="ativ-del-btn" onclick="event.stopPropagation();deletarAtividade('${a.id}','${projetoId}')">✕</button>
+    </div>
+    <div class="ativ-body ${isOpen?'open'}" id="ativbody-${a.id}">
+      ${pend.map(t=>renderAtivTarefa(t,projetoId)).join('')}
+      ${done.length>0?`
+        <div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:8px 0 4px;margin-top:4px;border-top:1px solid var(--border)">Concluídas (${done.length})</div>
+        ${done.map(t=>renderAtivTarefa(t,projetoId)).join('')}
+      `:''}
+      ${pend.length===0&&done.length===0?`<div style="font-size:.78rem;color:var(--text3);padding:4px 0 8px">Nenhuma tarefa. Adicione abaixo!</div>`:''}
+      <div class="ativ-add-task">
+        <input class="ativ-add-input" id="atinput-${a.id}" placeholder="Nova tarefa... (Enter)" onkeydown="if(event.key==='Enter')quickAddAtivTarefa('${a.id}','${projetoId}')">
+        <input type="date" class="ativ-add-input" id="atdate-${a.id}" style="width:130px;flex:none" title="Prazo da tarefa">
+        <button class="ativ-add-btn" onclick="quickAddAtivTarefa('${a.id}','${projetoId}')">+</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAtivTarefa(t, projetoId){
+  const sp=statusPrazo(t.data_vencimento);
+  const dateCls=sp==='vencido'?'vencido':sp==='proximo'?'proximo':'';
+  return`<div class="ativ-task-row" id="ativt-${t.id}">
+    <div class="ativ-task-check ${t.concluida?'done':''}" onclick="toggleAtivTarefa('${t.id}','${projetoId}')"></div>
+    <div class="ativ-task-prio p-${t.prioridade||'media'}"></div>
+    <span class="ativ-task-text ${t.concluida?'done':''}">${t.texto}</span>
+    ${t.data_vencimento?`<span class="ativ-task-date ${dateCls}">${brDate(t.data_vencimento)}</span>`:''}
+    <button class="ativ-task-del" onclick="deletarAtivTarefa('${t.id}','${projetoId}')">✕</button>
+  </div>`;
+}
+
+function toggleAtiv(id){
+  State.ativExpanded[id]=!State.ativExpanded[id];
+  const header=document.querySelector(`#ativ-${id} .ativ-expand-icon`);
+  const body=document.getElementById('ativbody-'+id);
+  if(header)header.classList.toggle('open',State.ativExpanded[id]);
+  if(body)body.classList.toggle('open',State.ativExpanded[id]);
+}
+
+function modalNovaAtividade(projetoId){
+  openModal('Nova atividade','',
+    `<div class="form-group"><label class="form-label">Nome da atividade</label><input type="text" class="form-input" id="m-a-nome" placeholder="Ex: Pesquisa inicial, Design, etc."></div>
+    <div class="form-group"><label class="form-label">Descrição (opcional)</label><input type="text" class="form-input" id="m-a-desc" placeholder="Breve descrição..."></div>
+    <div class="form-group"><label class="form-label">Prazo da atividade</label><input type="date" class="form-input" id="m-a-prazo"></div>`,
+    `<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="salvarNovaAtividade('${projetoId}')">Criar</button>`
+  );
+}
+
+async function salvarNovaAtividade(projetoId){
+  const nome=document.getElementById('m-a-nome').value.trim();
+  const desc=document.getElementById('m-a-desc').value.trim()||null;
+  const prazo=document.getElementById('m-a-prazo').value||null;
+  if(!nome){toast('Digite o nome!','error');return;}
+  const nova={id:uid(),user_id:State.user.id,projeto_id:projetoId,nome,descricao:desc,data_prazo:prazo,created_at:new Date().toISOString()};
+  const{error}=await getSB().from('meu_espaco_atividades').insert(nova);
+  if(error){toast('Erro: '+error.message,'error');return;}
+  State.atividades.push(nova);
+  State.ativExpanded[nova.id]=true;
+  closeModal();renderProjetoDetalhe(projetoId);toast('Atividade criada!');
+}
+
+function editarAtividade(id){
+  const a=State.atividades.find(x=>x.id===id);if(!a)return;
+  openModal('Editar atividade','',
+    `<div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" id="m-a-nome" value="${a.nome}"></div>
+    <div class="form-group"><label class="form-label">Descrição</label><input type="text" class="form-input" id="m-a-desc" value="${a.descricao||''}"></div>
+    <div class="form-group"><label class="form-label">Prazo</label><input type="date" class="form-input" id="m-a-prazo" value="${a.data_prazo||''}"></div>`,
+    `<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="salvarEdicaoAtividade('${id}')">Salvar</button>`
+  );
+}
+
+async function salvarEdicaoAtividade(id){
+  const a=State.atividades.find(x=>x.id===id);if(!a)return;
+  const nome=document.getElementById('m-a-nome').value.trim();
+  const desc=document.getElementById('m-a-desc').value.trim()||null;
+  const prazo=document.getElementById('m-a-prazo').value||null;
+  if(!nome){toast('Digite o nome!','error');return;}
+  const{error}=await getSB().from('meu_espaco_atividades').update({nome,descricao:desc,data_prazo:prazo}).eq('id',id);
+  if(error){toast('Erro','error');return;}
+  Object.assign(a,{nome,descricao:desc,data_prazo:prazo});
+  closeModal();renderProjetoDetalhe(a.projeto_id);toast('Atividade atualizada!');
+}
+
+async function deletarAtividade(id,projetoId){
+  if(!confirm('Deletar esta atividade e todas as suas tarefas?'))return;
+  await getSB().from('meu_espaco_ativ_tarefas').delete().eq('atividade_id',id);
+  await getSB().from('meu_espaco_atividades').delete().eq('id',id);
+  State.atividades=State.atividades.filter(a=>a.id!==id);
+  State.ativTarefas=State.ativTarefas.filter(t=>t.atividade_id!==id);
+  renderProjetoDetalhe(projetoId);toast('Atividade removida.');
+}
+
+async function quickAddAtivTarefa(ativId, projetoId){
+  const inp=document.getElementById('atinput-'+ativId);
+  const dateInp=document.getElementById('atdate-'+ativId);
+  const texto=inp?.value?.trim();if(!texto)return;
+  const prazo=dateInp?.value||null;
+  const nova={id:uid(),user_id:State.user.id,atividade_id:ativId,texto,prioridade:'media',concluida:false,data_vencimento:prazo,created_at:new Date().toISOString()};
+  const{error}=await getSB().from('meu_espaco_ativ_tarefas').insert(nova);
+  if(error){toast('Erro: '+error.message,'error');return;}
+  State.ativTarefas.push(nova);
+  if(inp)inp.value='';if(dateInp)dateInp.value='';
+  State.ativExpanded[ativId]=true;
+  renderProjetoDetalhe(projetoId);toast('Tarefa adicionada!');
+}
+
+async function toggleAtivTarefa(id, projetoId){
+  const t=State.ativTarefas.find(x=>x.id===id);if(!t)return;
+  const{error}=await getSB().from('meu_espaco_ativ_tarefas').update({concluida:!t.concluida}).eq('id',id);
+  if(error){toast('Erro','error');return;}
+  t.concluida=!t.concluida;
+  // Atualiza inline sem re-render completo
+  const row=document.getElementById('ativt-'+id);
+  if(row){
+    const check=row.querySelector('.ativ-task-check');
+    const txt=row.querySelector('.ativ-task-text');
+    if(check)check.classList.toggle('done',t.concluida);
+    if(txt)txt.classList.toggle('done',t.concluida);
+  }
+  // Re-render do bloco de atividade para mover para concluídas
+  const a=State.atividades.find(x=>x.id===t.atividade_id);
+  if(a){
+    const bloco=document.getElementById('ativ-'+a.id);
+    if(bloco){
+      const novoHtml=renderAtivBloco(a,projetoId);
+      const tmp=document.createElement('div');tmp.innerHTML=novoHtml;
+      bloco.replaceWith(tmp.firstChild);
+    }
+  }
+}
+
+async function deletarAtivTarefa(id, projetoId){
+  await getSB().from('meu_espaco_ativ_tarefas').delete().eq('id',id);
+  State.ativTarefas=State.ativTarefas.filter(t=>t.id!==id);
+  renderProjetoDetalhe(projetoId);
+}
+
+// Modal de nova tarefa de atividade com mais opções (a partir da lista global de tarefas)
+function modalNovaAtivTarefa(ativId, projetoId){
+  const a=State.atividades.find(x=>x.id===ativId);
+  openModal(`Nova tarefa — ${a?.nome||'Atividade'}`, '',
+    `<div class="form-group"><label class="form-label">Texto</label><input type="text" class="form-input" id="m-at-texto" placeholder="Descrição..."></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Prioridade</label>
+        <select class="form-select" id="m-at-prio"><option value="alta">Alta</option><option value="media" selected>Média</option><option value="baixa">Baixa</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Prazo</label><input type="date" class="form-input" id="m-at-data"></div>
+    </div>`,
+    `<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="salvarAtivTarefa('${ativId}','${projetoId}')">Adicionar</button>`
+  );
+}
+
+async function salvarAtivTarefa(ativId, projetoId){
+  const texto=document.getElementById('m-at-texto').value.trim();
+  const prio=document.getElementById('m-at-prio').value;
+  const data=document.getElementById('m-at-data').value||null;
+  if(!texto){toast('Digite o texto!','error');return;}
+  const nova={id:uid(),user_id:State.user.id,atividade_id:ativId,texto,prioridade:prio,concluida:false,data_vencimento:data,created_at:new Date().toISOString()};
+  const{error}=await getSB().from('meu_espaco_ativ_tarefas').insert(nova);
+  if(error){toast('Erro: '+error.message,'error');return;}
+  State.ativTarefas.push(nova);
+  State.ativExpanded[ativId]=true;
+  closeModal();renderProjetoDetalhe(projetoId);toast('Tarefa adicionada!');
+}
+
+// =================== FIM ATIVIDADES ===================
+
+async function salvarProgresso(id,val){
+  const{error}=await getSB().from('meu_espaco_projetos').update({progresso:parseInt(val)}).eq('id',id);
+  if(error){toast('Erro','error');return;}
+  const p=State.projetos.find(x=>x.id===id);if(p)p.progresso=parseInt(val);
+  toast('Progresso salvo!');
+}
+
+function corPickerHtml(corAtual){
+  return PROJ_CORES.map(cor=>`<div class="color-dot ${(corAtual||PROJ_CORES[0])===cor?'selected':''}" style="background:${cor}" onclick="selecionarCor('${cor}',this)"></div>`).join('');
+}
+function selecionarCor(cor,el){
+  document.querySelectorAll('#color-picker .color-dot').forEach(d=>d.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('m-p-cor').value=cor;
+}
+
+function modalNovoProjeto(){
+  openModal('Novo projeto','',
+    `<div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" id="m-p-nome" placeholder="Nome do projeto..."></div>
+    <div class="form-group"><label class="form-label">Descrição</label><textarea class="form-textarea" id="m-p-desc" placeholder="Descreva o projeto..."></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Status</label><select class="form-select" id="m-p-status"><option value="planejado">Planejado</option><option value="ativo" selected>Ativo</option><option value="pausado">Pausado</option><option value="concluido">Concluído</option></select></div>
+      <div class="form-group"><label class="form-label">Prazo do projeto</label><input type="date" class="form-input" id="m-p-prazo"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Cor</label><div class="color-picker-row" id="color-picker">${corPickerHtml(PROJ_CORES[0])}</div></div>
+    <input type="hidden" id="m-p-cor" value="${PROJ_CORES[0]}">`,
+    `<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="salvarNovoProjeto()">Criar</button>`
+  );
+}
+
+async function salvarNovoProjeto(){
+  const nome=document.getElementById('m-p-nome').value.trim();
+  const desc=document.getElementById('m-p-desc').value.trim();
+  const stat=document.getElementById('m-p-status').value;
+  const prazo=document.getElementById('m-p-prazo').value||null;
+  const cor=document.getElementById('m-p-cor').value;
+  if(!nome){toast('Digite o nome!','error');return;}
+  const novo={id:uid(),user_id:State.user.id,nome,descricao:desc,status:stat,progresso:0,data_prazo:prazo,cor};
+  const{error}=await getSB().from('meu_espaco_projetos').insert(novo);
+  if(error){toast('Erro: '+error.message,'error');return;}
+  State.projetos.push(novo);closeModal();renderProjetos();toast('Projeto criado!');
+}
+
+function editarProjeto(id){
+  const p=State.projetos.find(x=>x.id===id);if(!p)return;
+  openModal('Editar projeto','',
+    `<div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" id="m-p-nome" value="${p.nome}"></div>
+    <div class="form-group"><label class="form-label">Descrição</label><textarea class="form-textarea" id="m-p-desc">${p.descricao||''}</textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Status</label><select class="form-select" id="m-p-status"><option value="planejado" ${p.status==='planejado'?'selected':''}>Planejado</option><option value="ativo" ${p.status==='ativo'?'selected':''}>Ativo</option><option value="pausado" ${p.status==='pausado'?'selected':''}>Pausado</option><option value="concluido" ${p.status==='concluido'?'selected':''}>Concluído</option></select></div>
+      <div class="form-group"><label class="form-label">Prazo</label><input type="date" class="form-input" id="m-p-prazo" value="${p.data_prazo||''}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Cor</label><div class="color-picker-row" id="color-picker">${corPickerHtml(p.cor)}</div></div>
+    <input type="hidden" id="m-p-cor" value="${p.cor||PROJ_CORES[0]}">`,
+    `<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="salvarEdicaoProjeto('${id}')">Salvar</button>`
+  );
+}
+
+async function salvarEdicaoProjeto(id){
+  const nome=document.getElementById('m-p-nome').value.trim();
+  const desc=document.getElementById('m-p-desc').value.trim();
+  const stat=document.getElementById('m-p-status').value;
+  const prazo=document.getElementById('m-p-prazo').value||null;
+  const cor=document.getElementById('m-p-cor').value;
+  if(!nome){toast('Digite o nome!','error');return;}
+  const{error}=await getSB().from('meu_espaco_projetos').update({nome,descricao:desc,status:stat,data_prazo:prazo,cor}).eq('id',id);
+  if(error){toast('Erro','error');return;}
+  const p=State.projetos.find(x=>x.id===id);if(p)Object.assign(p,{nome,descricao:desc,status:stat,data_prazo:prazo,cor});
+  closeModal();if(State.projetoAtual===id)renderProjetoDetalhe(id);else renderProjetos();toast('Atualizado!');
+}
+
+async function deletarProjeto(id){
+  if(!confirm('Deletar este projeto?'))return;
+  await getSB().from('meu_espaco_ativ_tarefas').delete().in('atividade_id',State.atividades.filter(a=>a.projeto_id===id).map(a=>a.id));
+  await getSB().from('meu_espaco_atividades').delete().eq('projeto_id',id);
+  await getSB().from('meu_espaco_tarefas').delete().eq('projeto_id',id);
+  await getSB().from('meu_espaco_ideias').delete().eq('projeto_id',id);
+  await getSB().from('meu_espaco_projetos').delete().eq('id',id);
+  State.projetos=State.projetos.filter(x=>x.id!==id);
+  State.atividades=State.atividades.filter(a=>a.projeto_id!==id);
+  State.ativTarefas=State.ativTarefas.filter(t=>!State.atividades.some(a=>a.id===t.atividade_id));
+  State.tarefas=State.tarefas.filter(t=>t.projeto_id!==id);
+  State.ideias=State.ideias.filter(i=>i.projeto_id!==id);
+  State.projetoAtual=null;renderProjetos();toast('Projeto deletado.');
+}
+
+// IDEIAS
+function renderIdeias(){
+  const c=document.getElementById('page-content');
+  document.getElementById('topbar-actions').innerHTML=`<button class="btn-primary" onclick="modalNovaIdeia()">+ Nova ideia</button>`;
+  const filtro=State.ideiasFilter;
+  const lista=filtro==='todos'?State.ideias:State.ideias.filter(i=>i.projeto_id===filtro);
+  const chips=[{id:'todos',label:'Todas'},...State.projetos.map(p=>({id:p.id,label:p.nome}))];
+  c.innerHTML=`
+  <div class="filter-row">${chips.map(ch=>`<div class="filter-chip ${filtro===ch.id?'active':''}" onclick="State.ideiasFilter='${ch.id}';renderIdeias()">${ch.label}</div>`).join('')}</div>
+  ${lista.length===0?`<div class="empty-state" style="padding:60px"><p>Nenhuma ideia ainda.</p></div>`:
+    `<div class="ideias-grid">${lista.map(i=>{
+      const proj=State.projetos.find(p=>p.id===i.projeto_id);
+      return`<div class="ideia-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px">
+          <div class="ideia-titulo">${i.titulo}</div>
+          <button class="ideia-del" style="opacity:1" onclick="deletarIdeia('${i.id}')">✕</button>
+        </div>
+        <div class="ideia-body">${i.conteudo||''}</div>
+        <div class="ideia-meta">${proj?`<span class="ideia-proj-tag">${proj.nome}</span>`:'<span></span>'}<span class="ideia-date">${brDate(i.created_at?.slice(0,10))}</span></div>
+      </div>`;
+    }).join('')}</div>`}`;
+}
+
+function modalNovaIdeia(projetoId){
+  const projs=State.projetos.map(p=>`<option value="${p.id}" ${p.id===projetoId?'selected':''}>${p.nome}</option>`).join('');
+  openModal('Nova ideia','',
+    `<div class="form-group"><label class="form-label">Título</label><input type="text" class="form-input" id="m-i-titulo" placeholder="Resumo da ideia..."></div>
+    <div class="form-group"><label class="form-label">Conteúdo</label><textarea class="form-textarea" id="m-i-body" placeholder="Detalhe..." style="min-height:100px"></textarea></div>
+    ${projs?`<div class="form-group"><label class="form-label">Projeto</label><select class="form-select" id="m-i-proj"><option value="">— nenhum —</option>${projs}</select></div>`:''}`,
+    `<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="salvarIdeia('${projetoId||''}')">Salvar</button>`
+  );
+}
+
+async function salvarIdeia(projetoId){
+  const titulo=document.getElementById('m-i-titulo').value.trim();
+  const cont=document.getElementById('m-i-body').value.trim();
+  const proj=document.getElementById('m-i-proj')?.value||projetoId||null;
+  if(!titulo){toast('Digite o título!','error');return;}
+  const nova={id:uid(),user_id:State.user.id,titulo,conteudo:cont,projeto_id:proj||null,created_at:new Date().toISOString()};
+  const{error}=await getSB().from('meu_espaco_ideias').insert(nova);
+  if(error){toast('Erro: '+error.message,'error');return;}
+  State.ideias.unshift(nova);closeModal();
+  if(State.projetoAtual)renderProjetoDetalhe(State.projetoAtual);else renderIdeias();
+  toast('Ideia salva!');
+}
+
+async function deletarIdeia(id){
+  await getSB().from('meu_espaco_ideias').delete().eq('id',id);
+  State.ideias=State.ideias.filter(i=>i.id!==id);
+  if(State.projetoAtual)renderProjetoDetalhe(State.projetoAtual);else renderIdeias();
+}
+
+// CALENDÁRIO
+function renderCalendario(){
+  const c=document.getElementById('page-content');
+  document.getElementById('topbar-actions').innerHTML=`<button class="btn-primary" onclick="modalNovoEvento()">+ Evento</button>`;
+  const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const DOWS_SHORT=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const DOWS_FULL=['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+  const{calMes:mes,calAno:ano,calDiaSel}=State;
+  const hoje=isoHoje();
+  const primDia=new Date(ano,mes,1).getDay();
+  const totalDias=new Date(ano,mes+1,0).getDate();
+  const prevTotal=new Date(ano,mes,0).getDate();
+  const diasComEv=new Set(State.eventos.filter(e=>{const d=new Date(e.data+'T12:00:00');return d.getMonth()===mes&&d.getFullYear()===ano}).map(e=>e.data));
+
+  let cells='';
+  for(let i=0;i<primDia;i++)cells+=`<div class="cal-day other-month">${prevTotal-primDia+i+1}</div>`;
+  for(let d=1;d<=totalDias;d++){
+    const iso=`${ano}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const cls=[iso===hoje?'today':'',iso===calDiaSel?'selected':'',diasComEv.has(iso)?'has-event':''].filter(Boolean).join(' ');
+    cells+=`<div class="cal-day ${cls}" onclick="selDia('${iso}')">${d}</div>`;
+  }
+  const resto=(primDia+totalDias)%7;
+  if(resto!==0)for(let d=1;d<=7-resto;d++)cells+=`<div class="cal-day other-month">${d}</div>`;
+
+  const dataFim=new Date();dataFim.setDate(dataFim.getDate()+60);
+  const dataFimISO=dataFim.toISOString().slice(0,10);
+  const evsFuturos=State.eventos.filter(e=>e.data>=hoje&&e.data<=dataFimISO).sort((a,b)=>a.data.localeCompare(b.data)||(a.horario||'99:99').localeCompare(b.horario||'99:99'));
+
+  const grupos={};
+  evsFuturos.forEach(e=>{if(!grupos[e.data])grupos[e.data]=[];grupos[e.data].push(e);});
+  for(let i=0;i<7;i++){
+    const d=new Date();d.setDate(d.getDate()+i);
+    const iso=d.toISOString().slice(0,10);
+    if(!grupos[iso])grupos[iso]=[];
+  }
+
+  const diasOrdenados=Object.keys(grupos).sort();
+
+  const agendaHTML=diasOrdenados.length===0
+    ?`<div class="empty-state" style="padding:40px"><p>Nenhum evento nos próximos 60 dias.</p></div>`
+    :diasOrdenados.map(iso=>{
+      const d=new Date(iso+'T12:00:00');
+      const ehHoje=iso===hoje;
+      const nomeD=DOWS_FULL[d.getDay()];
+      const mesNome=d.toLocaleDateString('pt-BR',{month:'long'});
+      const evs=grupos[iso];
+      return`<div class="agenda-day-group">
+        <div class="agenda-day-header">
+          <div class="agenda-day-num" style="${ehHoje?'color:var(--darkgreen)':''}">${d.getDate()}</div>
+          <div class="agenda-day-info">
+            <div class="agenda-day-name">${nomeD}</div>
+            <div class="agenda-day-full">${mesNome} ${d.getFullYear()}</div>
+          </div>
+          ${ehHoje?`<div class="agenda-day-today-badge">Hoje</div>`:''}
+          <button class="btn-secondary" style="font-size:.7rem;padding:4px 8px;margin-left:auto" onclick="modalNovoEvento('${iso}')">+</button>
+        </div>
+        ${evs.length===0
+          ?`<div class="agenda-empty-day">Sem eventos</div>`
+          :evs.map(e=>`
+        <div class="agenda-event-row">
+          <div class="agenda-event-time-col">
+            <div class="agenda-event-time-txt">${e.horario||''}</div>
+            <div class="agenda-event-dot" style="color:${e.cor||'var(--darkgreen)'}"></div>
+          </div>
+          <div class="agenda-event-card" style="border-left-color:${e.cor||'var(--darkgreen)'}">
+            <div style="flex:1">
+              <div class="agenda-event-nome">${e.titulo}</div>
+              ${e.descricao?`<div class="agenda-event-desc">${e.descricao}</div>`:''}
+            </div>
+            <button class="agenda-event-del" id="evdel-${e.id}">✕</button>
+          </div>
+        </div>`).join('')}
+      </div>`;
+    }).join('');
+
+  c.innerHTML=`
+  <div class="cal-wrapper">
+    <div>
+      <div class="cal-card">
+        <div class="cal-header">
+          <div class="cal-nav">
+            <button onclick="navCal(-1)">←</button>
+            <div class="cal-month">${MESES[mes]} ${ano}</div>
+            <button onclick="navCal(1)">→</button>
+          </div>
+          <button class="btn-secondary" style="font-size:.72rem;padding:4px 9px" onclick="State.calMes=new Date().getMonth();State.calAno=new Date().getFullYear();State.calDiaSel=isoHoje();renderCalendario()">Hoje</button>
+        </div>
+        <div class="cal-grid">
+          ${DOWS_SHORT.map(d=>`<div class="cal-dow">${d}</div>`).join('')}
+          ${cells}
+        </div>
+      </div>
+    </div>
+    <div class="cal-agenda">
+      <div class="cal-agenda-header">
+        <div class="cal-sel-date">Próximos eventos</div>
+      </div>
+      <div class="cal-agenda-scroll">${agendaHTML}</div>
+    </div>
+  </div>`;
+
+  State.eventos.forEach(e=>{
+    const btn=document.getElementById('evdel-'+e.id);
+    if(btn)btn.onclick=ev=>{ev.stopPropagation();deletarEvento(e.id);};
+  });
+}
+
+function selDia(iso){State.calDiaSel=iso;renderCalendario();}
+function navCal(dir){
+  State.calMes+=dir;
+  if(State.calMes<0){State.calMes=11;State.calAno--;}
+  if(State.calMes>11){State.calMes=0;State.calAno++;}
+  renderCalendario();
+}
+
+function modalNovoEvento(data){
+  const COR_EV=['#2b3b1c','#c94d5e','#b07a28','#2e6e38','#3a7080','#7c5cbf'];
+  openModal('Novo evento','',
+    `<div class="form-group"><label class="form-label">Título</label><input type="text" class="form-input" id="m-ev-titulo" placeholder="Nome do evento..."></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Data</label><input type="date" class="form-input" id="m-ev-data" value="${data||State.calDiaSel}"></div>
+      <div class="form-group"><label class="form-label">Horário</label><input type="time" class="form-input" id="m-ev-hora"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Descrição</label><textarea class="form-textarea" id="m-ev-desc" placeholder="Detalhes..." style="min-height:60px"></textarea></div>
+    <div class="form-group"><label class="form-label">Cor</label>
+      <div class="color-picker-row" id="color-picker">${COR_EV.map((cor,i)=>`<div class="color-dot ${i===0?'selected':''}" style="background:${cor}" onclick="selecionarCor('${cor}',this)"></div>`).join('')}</div>
+    </div>
+    <input type="hidden" id="m-p-cor" value="${COR_EV[0]}">`,
+    `<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="salvarEvento()">Salvar</button>`
+  );
+}
+
+async function salvarEvento(){
+  const titulo=document.getElementById('m-ev-titulo').value.trim();
+  const data=document.getElementById('m-ev-data').value;
+  const hora=document.getElementById('m-ev-hora').value||null;
+  const desc=document.getElementById('m-ev-desc').value.trim()||null;
+  const cor=document.getElementById('m-p-cor').value;
+  if(!titulo||!data){toast('Título e data obrigatórios!','error');return;}
+  const novo={id:uid(),user_id:State.user.id,titulo,data,horario:hora,descricao:desc,cor};
+  const{error}=await getSB().from('meu_espaco_eventos').insert(novo);
+  if(error){toast('Erro: '+error.message,'error');return;}
+  State.eventos.push(novo);
+  State.calDiaSel=data;State.calMes=parseInt(data.split('-')[1])-1;State.calAno=parseInt(data.split('-')[0]);
+  closeModal();renderCalendario();toast('Evento salvo!');
+}
+
+async function deletarEvento(id){
+  await getSB().from('meu_espaco_eventos').delete().eq('id',id);
+  State.eventos=State.eventos.filter(e=>e.id!==id);renderCalendario();
+}
+
+// WISHLIST
+const CAT_MAP={desejo:{cls:'cat-desejo',label:'Desejo'},necessidade:{cls:'cat-necessidade',label:'Necessidade'},estudo:{cls:'cat-estudo',label:'Estudo'},casa:{cls:'cat-casa',label:'Casa'},outro:{cls:'cat-outro',label:'Outro'}};
+
+function renderWishlist(){
+  const c=document.getElementById('page-content');
+  document.getElementById('topbar-actions').innerHTML=`<button class="btn-primary" onclick="modalNovaWish()">+ Adicionar</button>`;
+  const filtro=State.wishFilter;
+  const lista=filtro==='todos'?State.compras:filtro==='compradas'?State.compras.filter(x=>x.comprada):State.compras.filter(x=>x.categoria===filtro&&!x.comprada);
+  const pend=State.compras.filter(x=>!x.comprada);
+  const done=State.compras.filter(x=>x.comprada);
+  const total=pend.reduce((s,x)=>s+(parseFloat(x.preco)||0),0);
+  const chips=[{id:'todos',label:'Todos'},...Object.entries(CAT_MAP).map(([k,v])=>({id:k,label:v.label})),{id:'compradas',label:'Comprados'}];
+
+  c.innerHTML=`
+  <div class="wish-kpis">
+    <div class="wish-kpi"><div class="wish-kpi-n">${pend.length}</div><div class="wish-kpi-l">na lista</div></div>
+    <div class="wish-kpi"><div class="wish-kpi-n">${done.length}</div><div class="wish-kpi-l">comprados</div></div>
+    ${total>0?`<div class="wish-kpi"><div class="wish-kpi-n">R$ ${total.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div><div class="wish-kpi-l">estimado</div></div>`:''}
+  </div>
+  <div class="filter-row">${chips.map(ch=>`<div class="filter-chip ${filtro===ch.id?'active':''}" onclick="State.wishFilter='${ch.id}';renderWishlist()">${ch.label}</div>`).join('')}</div>
+  ${lista.length===0?`<div class="empty-state" style="padding:60px"><p>Nenhum item aqui.</p></div>`:
+    `<div class="wish-grid">${lista.map(item=>renderWishCard(item)).join('')}</div>`}`;
+
+  bindWishEvents();
+}
+
+function renderWishCard(item){
+  const id=item.id;
+  const cat=CAT_MAP[item.categoria]||CAT_MAP.outro;
+  return`<div class="wish-card ${item.comprada?'comprada':''}" id="wish-${item.id}">
+    <button class="wish-del" id="wdel-${id}">✕</button>
+    ${item.comprada?`<div class="wish-check">✓</div>`:''}
+    <div class="wish-img-wrap">
+      ${item.imagem_url?`<img class="wish-img" src="${item.imagem_url}" alt="${item.nome}" onerror="this.parentElement.innerHTML='<div class=wish-img-ph>◻</div>'">`:`<div class="wish-img-ph">◻</div>`}
+    </div>
+    <div class="wish-body">
+      <div class="wish-nome" title="${item.nome}">${item.nome}</div>
+      ${item.preco?`<div class="wish-preco">R$ ${parseFloat(item.preco).toLocaleString('pt-BR',{minimumFractionDigits:2})}</div>`:''}
+      ${item.nota?`<div class="wish-nota">${item.nota}</div>`:''}
+      <div class="wish-footer">
+        <span class="wish-cat ${cat.cls}">${cat.label}</span>
+        <button class="btn-comprada" id="wbuy-${id}">${item.comprada?'↩ Desfazer':'Comprei!'}</button>
+      </div>
+      ${item.link?`<a class="wish-link" href="${item.link}" target="_blank" rel="noopener">Ver produto →</a>`:''}
+    </div>
+  </div>`;
+}
+
+function bindWishEvents(){
+  State.compras.forEach(item=>{
+    const d=document.getElementById('wdel-'+item.id);
+    const b=document.getElementById('wbuy-'+item.id);
+    if(d)d.onclick=e=>{e.preventDefault();deletarWish(item.id);};
+    if(b)b.onclick=e=>{e.preventDefault();toggleWish(item.id);};
+  });
+}
+
+function modalNovaWish(){
+  openModal('Novo item','',
+    `<div class="form-group"><label class="form-label">Nome *</label><input type="text" class="form-input" id="m-w-nome" placeholder="Ex: Tênis Nike..."></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Preço estimado</label><input type="number" class="form-input" id="m-w-preco" placeholder="0,00" step="0.01" min="0"></div>
+      <div class="form-group"><label class="form-label">Categoria</label><select class="form-select" id="m-w-cat">${Object.entries(CAT_MAP).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('')}</select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Link do produto</label><input type="url" class="form-input" id="m-w-link" placeholder="https://..."></div>
+    <div class="form-group"><label class="form-label">URL da imagem</label>
+      <input type="url" class="form-input" id="m-w-img" placeholder="Clique direito na foto → copiar endereço da imagem" oninput="prevWishImg(this.value)">
+      <div id="w-preview" style="display:none;margin-top:8px"><img id="w-preview-img" style="width:100%;max-height:140px;object-fit:contain;border-radius:8px;background:var(--bg3);padding:6px" src="" onerror="document.getElementById('w-preview').style.display='none'"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Nota</label><textarea class="form-textarea" id="m-w-nota" placeholder="Por que quer comprar?" style="min-height:55px"></textarea></div>`,
+    `<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="salvarWish()">Adicionar</button>`
+  );
+}
+
+function prevWishImg(url){
+  const w=document.getElementById('w-preview');const i=document.getElementById('w-preview-img');
+  if(url&&url.startsWith('http')){i.src=url;w.style.display='block';}else{w.style.display='none';}
+}
+
+async function salvarWish(){
+  const nome=document.getElementById('m-w-nome').value.trim();
+  const preco=document.getElementById('m-w-preco').value||null;
+  const cat=document.getElementById('m-w-cat').value;
+  const link=document.getElementById('m-w-link').value.trim()||null;
+  const img=document.getElementById('m-w-img').value.trim()||null;
+  const nota=document.getElementById('m-w-nota').value.trim()||null;
+  if(!nome){toast('Digite o nome!','error');return;}
+  const novo={id:uid(),user_id:State.user.id,nome,preco:preco?parseFloat(preco):null,categoria:cat,link,imagem_url:img,nota,comprada:false,created_at:new Date().toISOString()};
+  const{error}=await getSB().from('meu_espaco_compras').insert(novo);
+  if(error){toast('Erro: '+error.message,'error');return;}
+  State.compras.unshift(novo);closeModal();renderWishlist();toast('Item adicionado!');
+}
+
+async function toggleWish(id){
+  const item=State.compras.find(x=>x.id===id);if(!item)return;
+  const{error}=await getSB().from('meu_espaco_compras').update({comprada:!item.comprada}).eq('id',id);
+  if(error){toast('Erro','error');return;}
+  item.comprada=!item.comprada;toast(item.comprada?'Comprado!':'De volta à lista');renderWishlist();
+}
+
+async function deletarWish(id){
+  await getSB().from('meu_espaco_compras').delete().eq('id',id);
+  State.compras=State.compras.filter(x=>x.id!==id);renderWishlist();toast('Item removido.');
+}
+</script>
+</body>
+</html>
