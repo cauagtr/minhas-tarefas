@@ -638,10 +638,9 @@ const State={
 
 async function loadAll(){
   const userId=State.user.id;
-  const[tR,pR,mR,aR,atR,iR,eR,fR,cR]=await Promise.all([
+  const[tR,pR,aR,atR,iR,eR,fR,cR]=await Promise.all([
     getSB().from('meu_espaco_tarefas').select('*').eq('user_id',userId).order('created_at'),
     getSB().from('meu_espaco_projetos').select('*').eq('user_id',userId).order('created_at'),
-    getSB().from('meu_espaco_metas').select('*').eq('user_id',userId).order('created_at').catch(()=>({data:[]})),
     getSB().from('meu_espaco_atividades').select('*').eq('user_id',userId).order('created_at'),
     getSB().from('meu_espaco_ativ_tarefas').select('*').eq('user_id',userId).order('created_at'),
     getSB().from('meu_espaco_ideias').select('*').eq('user_id',userId).order('created_at',{ascending:false}),
@@ -649,7 +648,10 @@ async function loadAll(){
     getSB().from('meu_espaco_foco').select('*').eq('user_id',userId).eq('data',isoHoje()).maybeSingle(),
     getSB().from('meu_espaco_compras').select('*').eq('user_id',userId).order('created_at',{ascending:false}),
   ]);
-  State.tarefas=tR.data||[];State.projetos=pR.data||[];State.metas=mR.data||[];
+  // Metas — carrega separado para não quebrar o resto se a tabela não existir ainda
+  let metas=[];
+  try{const mR=await getSB().from('meu_espaco_metas').select('*').eq('user_id',userId).order('created_at');metas=mR.data||[];}catch(e){}
+  State.tarefas=tR.data||[];State.projetos=pR.data||[];State.metas=metas;
   State.atividades=aR.data||[];State.ativTarefas=atR.data||[];
   State.ideias=iR.data||[];State.eventos=eR.data||[];
   State.foco=fR.data;State.compras=cR.data||[];
