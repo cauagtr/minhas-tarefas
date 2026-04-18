@@ -270,7 +270,43 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 .toast.success{background:var(--darkgreen);color:var(--lime)}.toast.error{background:var(--rose);color:#fff}.toast.info{background:var(--lime);color:var(--darkgreen)}
 .empty-state{text-align:center;padding:36px;color:var(--text3)}
 .empty-state p{font-size:.85rem}
+/* ── PROJ TABS ── */
+.proj-tabs{display:flex;gap:2px;padding:3px;background:var(--bg3);border-radius:10px;margin-bottom:16px;overflow-x:auto}
+.proj-tab{flex:1;min-width:72px;padding:7px 5px;border:none;border-radius:7px;background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;text-align:center}
+.proj-tab.active{background:var(--darkgreen);color:var(--lime);font-weight:600}
+/* ── TIMER ── */
+.btn-timer{border:none;border-radius:8px;padding:5px 10px;font-family:'DM Sans',sans-serif;font-size:.74rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;transition:all .2s}
+.btn-timer.start{background:rgba(46,110,56,.1);color:var(--emerald);border:1px solid rgba(46,110,56,.2)}
+.btn-timer.start:hover{background:rgba(46,110,56,.18)}
+.btn-timer.running{background:rgba(176,122,40,.12);color:var(--amber);border:1px solid rgba(176,122,40,.3)}
+.btn-timer.paused{background:rgba(58,112,128,.1);color:#3a7080;border:1px solid rgba(58,112,128,.2)}
+.btn-timer.concluir{background:rgba(46,110,56,.1);color:var(--emerald);border:1px solid rgba(46,110,56,.2)}
+.timer-disp{font-family:'Fraunces',serif;font-size:.8rem;font-weight:700;color:var(--amber);min-width:42px;text-align:center}
+.timer-banner{position:fixed;bottom:0;left:0;right:0;z-index:88;background:var(--amber);color:#fff;padding:9px 18px;display:flex;align-items:center;gap:10px;font-size:.82rem;font-weight:600;transform:translateY(100%);transition:transform .3s;box-shadow:0 -3px 12px rgba(0,0,0,.15)}
+.timer-banner.show{transform:translateY(0)}
+.t-banner-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t-banner-time{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;min-width:52px;text-align:right}
+@media(max-width:768px){.timer-banner{bottom:56px;border-radius:10px 10px 0 0}}
+/* ── TASK CARD COM TIMER ── */
+.task-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px;margin-bottom:9px;transition:all .15s}
+.task-card:hover{border-color:var(--border2)}
+.task-card.ativa{border-color:var(--amber);background:rgba(176,122,40,.03);box-shadow:0 0 0 2px rgba(176,122,40,.12)}
+.task-card.concluida{opacity:.5}
+.task-card-header{display:flex;align-items:flex-start;gap:9px}
+.task-card-info{flex:1;min-width:0}
+.task-card-nome{font-size:.87rem;font-weight:600;color:var(--text);margin-bottom:5px;line-height:1.35}
+.task-card-nome.riscado{text-decoration:line-through;color:var(--text3)}
+.task-card-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.task-card-btns{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.task-tag{font-size:.67rem;padding:2px 7px;border-radius:10px;font-weight:500;white-space:nowrap}
+.tag-prazo{background:rgba(43,59,28,.07);color:var(--text2)}
+.tag-prazo.vencido{background:rgba(201,77,94,.12);color:var(--rose);font-weight:700}
+.tag-prazo.proximo{background:rgba(176,122,40,.12);color:var(--amber);font-weight:700}
+.tag-meta{background:rgba(58,112,128,.1);color:#3a7080}
+.tag-tempo{background:rgba(210,230,123,.25);color:var(--darkgreen)}
+
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(43,59,28,.15);border-radius:10px}
+
 /* FAB mobile */
 @media(max-width:768px){
   .fab{
@@ -418,7 +454,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
     <div class="nav-section">
       <div class="nav-label">Principal</div>
       <div class="nav-item active" data-page="dashboard" onclick="App.navigate('dashboard')"><span class="nav-dot"></span><span>Dashboard</span></div>
-      <div class="nav-item" data-page="tarefas" onclick="App.navigate('tarefas')"><span class="nav-dot"></span><span>Tarefas</span><span class="nav-badge hidden" id="badge-tarefas">0</span></div>
+      <div class="nav-item" data-page="tarefas" onclick="App.navigate('tarefas')"><span class="nav-dot"></span><span>Tarefas Rápidas</span><span class="nav-badge hidden" id="badge-tarefas">0</span></div>
       <div class="nav-item" data-page="projetos" onclick="App.navigate('projetos')"><span class="nav-dot"></span><span>Projetos</span></div>
       <div class="nav-item" data-page="ideias" onclick="App.navigate('ideias')"><span class="nav-dot"></span><span>Ideias</span></div>
       <div class="nav-item" data-page="calendario" onclick="App.navigate('calendario')"><span class="nav-dot"></span><span>Calendário</span></div>
@@ -445,6 +481,27 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
   </main>
 </div>
 
+<!-- Timer Banner -->
+<div class="timer-banner" id="timer-banner">
+  <span>⏱</span>
+  <span class="t-banner-name" id="t-banner-name">Tarefa em andamento</span>
+  <span class="t-banner-time" id="t-banner-time">00:00</span>
+</div>
+
+<!-- Blocker anti-procrastinação -->
+<div id="blocker-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:180;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)">
+  <div style="background:var(--card);border-radius:20px;padding:30px;max-width:380px;width:100%;text-align:center;box-shadow:0 30px 70px rgba(0,0,0,.25)">
+    <div style="font-size:2.2rem;margin-bottom:10px">🔒</div>
+    <div style="font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:8px">Uma tarefa por vez!</div>
+    <div style="color:var(--text2);font-size:.84rem;line-height:1.55;margin-bottom:14px">Você já tem uma tarefa ativa neste projeto. Conclua ou pause antes de iniciar outra.</div>
+    <div id="blocker-task-name" style="background:rgba(176,122,40,.1);border:1px solid rgba(176,122,40,.2);border-radius:10px;padding:9px 13px;font-weight:600;color:var(--amber);font-size:.86rem;margin-bottom:18px">—</div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <button class="btn-cancel" onclick="fecharBlocker()">Entendido</button>
+      <button class="btn-save" onclick="irParaTaskAtiva()">Ver tarefa ativa</button>
+    </div>
+  </div>
+</div>
+
 <!-- FAB mobile -->
 <button class="fab hidden" id="fab-btn" onclick="fabAction()">+</button>
 
@@ -454,7 +511,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
     <span class="bn-icon">🏠</span><span class="bn-label">Início</span>
   </div>
   <div class="bn-item" data-page="tarefas" onclick="App.navigate('tarefas')">
-    <span class="bn-icon">✓</span><span class="bn-label">Tarefas</span>
+    <span class="bn-icon">⚡</span><span class="bn-label">Rápidas</span>
     <span class="bn-dot hidden" id="bn-badge">0</span>
   </div>
   <div class="bn-item" data-page="projetos" onclick="App.navigate('projetos')">
@@ -571,17 +628,20 @@ window.addEventListener('load',async()=>{
 // STATE
 const State={
   user:null,perfil:null,
-  tarefas:[],projetos:[],atividades:[],ativTarefas:[],ideias:[],eventos:[],compras:[],foco:null,
+  tarefas:[],projetos:[],metas:[],atividades:[],ativTarefas:[],ideias:[],eventos:[],compras:[],foco:null,
   calMes:new Date().getMonth(),calAno:new Date().getFullYear(),calDiaSel:isoHoje(),
-  projetoAtual:null,tarefaTab:'diaria',ideiasFilter:'todos',wishFilter:'todos',
-  ativExpanded:{}
+  projetoAtual:null,projetoTab:'tarefas',tarefaTab:'diaria',ideiasFilter:'todos',wishFilter:'todos',
+  ativExpanded:{},
+  // Timer
+  timerAtivo:null // {tarefaId, projetoId, inicio (ms), acumBase (seg), intervalo}
 };
 
 async function loadAll(){
   const userId=State.user.id;
-  const[tR,pR,aR,atR,iR,eR,fR,cR]=await Promise.all([
+  const[tR,pR,mR,aR,atR,iR,eR,fR,cR]=await Promise.all([
     getSB().from('meu_espaco_tarefas').select('*').eq('user_id',userId).order('created_at'),
     getSB().from('meu_espaco_projetos').select('*').eq('user_id',userId).order('created_at'),
+    getSB().from('meu_espaco_metas').select('*').eq('user_id',userId).order('created_at').catch(()=>({data:[]})),
     getSB().from('meu_espaco_atividades').select('*').eq('user_id',userId).order('created_at'),
     getSB().from('meu_espaco_ativ_tarefas').select('*').eq('user_id',userId).order('created_at'),
     getSB().from('meu_espaco_ideias').select('*').eq('user_id',userId).order('created_at',{ascending:false}),
@@ -589,7 +649,7 @@ async function loadAll(){
     getSB().from('meu_espaco_foco').select('*').eq('user_id',userId).eq('data',isoHoje()).maybeSingle(),
     getSB().from('meu_espaco_compras').select('*').eq('user_id',userId).order('created_at',{ascending:false}),
   ]);
-  State.tarefas=tR.data||[];State.projetos=pR.data||[];
+  State.tarefas=tR.data||[];State.projetos=pR.data||[];State.metas=mR.data||[];
   State.atividades=aR.data||[];State.ativTarefas=atR.data||[];
   State.ideias=iR.data||[];State.eventos=eR.data||[];
   State.foco=fR.data;State.compras=cR.data||[];
@@ -626,18 +686,185 @@ const App={
     if(!document.getElementById('page-content'))return;
     document.querySelectorAll('.nav-item').forEach(i=>i.classList.toggle('active',i.dataset.page===page));
     document.querySelectorAll('.bn-item').forEach(i=>i.classList.toggle('active',i.dataset.page===page));
-    const T={dashboard:['Dashboard','Seu centro de comando'],tarefas:['Tarefas','Diárias, semanais, mensais e recorrentes'],projetos:['Projetos','Acompanhe seu progresso'],ideias:['Ideias','Registre suas ideias'],calendario:['Calendário','Sua agenda'],wishlist:['Wishlist','Itens que você quer comprar']};
+    const T={
+      dashboard:['Dashboard','Seu centro de comando'],
+      tarefas:['Tarefas Rápidas','sem projeto — coisas do dia'],
+      projetos:['Projetos','Acompanhe seu progresso'],
+      ideias:['Ideias','Registre suas ideias'],
+      calendario:['Calendário','Sua agenda'],
+      wishlist:['Wishlist','Itens que você quer comprar']
+    };
     const[t,s]=T[page]||[page,''];
     document.getElementById('page-title').textContent=t;
     document.getElementById('page-sub').textContent=s;
     const R={dashboard:renderDashboard,tarefas:renderTarefas,projetos:renderProjetos,ideias:renderIdeias,calendario:renderCalendario,wishlist:renderWishlist};
     if(R[page])R[page]();
-    // FAB: mostra em todas as páginas exceto dashboard
     const fab=document.getElementById('fab-btn');
     if(fab)fab.classList.toggle('hidden',page==='dashboard');
   },
   async refresh(){await loadAll();this.navigate(this.current);}
 };
+
+// ══════════════════════════════════════════
+// TIMER ENGINE
+// ══════════════════════════════════════════
+const fmtSec=s=>{const m=Math.floor(s/60),ss=s%60;return`${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;};
+const fmtMin=m=>{if(!m&&m!==0)return'—';if(m<60)return`${m}min`;return`${Math.floor(m/60)}h${m%60?` ${m%60}min`:''}`;};
+
+function startTimerLocal(tarefaId,acumBase=0,decInicial=0){
+  if(State.timerAtivo)clearInterval(State.timerAtivo.intervalo);
+  const inicio=Date.now()-decInicial*1000;
+  const intervalo=setInterval(()=>{
+    const seg=Math.floor((Date.now()-inicio)/1000)+acumBase;
+    // atualiza display inline
+    const el=document.getElementById('tdisp-'+tarefaId);
+    if(el)el.textContent=fmtSec(seg);
+    // atualiza banner
+    const bt=document.getElementById('t-banner-time');
+    if(bt)bt.textContent=fmtSec(seg);
+  },1000);
+  State.timerAtivo={tarefaId,inicio,acumBase,intervalo};
+  const t=State.tarefas.find(x=>x.id===tarefaId);
+  const bn=document.getElementById('t-banner-name');
+  if(bn)bn.textContent=t?t.texto:'Tarefa ativa';
+  document.getElementById('timer-banner').classList.add('show');
+}
+
+function stopTimer(){
+  if(State.timerAtivo)clearInterval(State.timerAtivo.intervalo);
+  State.timerAtivo=null;
+  document.getElementById('timer-banner').classList.remove('show');
+}
+
+function getSegAtual(tarefaId){
+  if(State.timerAtivo&&State.timerAtivo.tarefaId===tarefaId){
+    return Math.floor((Date.now()-State.timerAtivo.inicio)/1000)+(State.timerAtivo.acumBase||0);
+  }
+  const t=State.tarefas.find(x=>x.id===tarefaId);
+  return t?Math.round((t.tempo_gasto||0)):0;
+}
+
+async function iniciarTarefa(id){
+  const t=State.tarefas.find(x=>x.id===id);if(!t)return;
+
+  // Bloqueio: 1 tarefa ativa por projeto
+  if(t.projeto_id){
+    const ativaNoProj=State.tarefas.find(x=>x.projeto_id===t.projeto_id&&x.status==='ativo'&&x.id!==id);
+    if(ativaNoProj){
+      document.getElementById('blocker-task-name').textContent=ativaNoProj.texto;
+      State._blockerProjId=t.projeto_id;
+      document.getElementById('blocker-overlay').style.display='flex';
+      return;
+    }
+  }
+
+  // Pausa qualquer outra tarefa ativa (de outro projeto)
+  if(State.timerAtivo&&State.timerAtivo.tarefaId!==id){
+    await pausarTarefaLocal(State.timerAtivo.tarefaId);
+  }
+  const agora=new Date().toISOString();
+  await getSB().from('meu_espaco_tarefas').update({status:'ativo',inicio_at:agora}).eq('id',id);
+  t.status='ativo';t.inicio_at=agora;
+  startTimerLocal(id,t.tempo_gasto||0);
+  reRenderPage();toast('⏱ Iniciado!');
+}
+
+function fecharBlocker(){document.getElementById('blocker-overlay').style.display='none';}
+function irParaTaskAtiva(){
+  fecharBlocker();
+  if(State._blockerProjId){State.projetoAtual=State._blockerProjId;App.navigate('projetos');}
+}
+
+async function pausarTarefa(id){
+  await pausarTarefaLocal(id);
+  reRenderPage();toast('Pausado.');
+}
+
+async function pausarTarefaLocal(id){
+  const t=State.tarefas.find(x=>x.id===id);if(!t)return;
+  let gasto=t.tempo_gasto||0;
+  if(State.timerAtivo&&State.timerAtivo.tarefaId===id){
+    gasto+=Math.floor((Date.now()-State.timerAtivo.inicio)/1000);
+    stopTimer();
+  }
+  await getSB().from('meu_espaco_tarefas').update({status:'pausado',tempo_gasto:gasto}).eq('id',id);
+  t.status='pausado';t.tempo_gasto=gasto;
+}
+
+async function concluirTarefa(id){
+  const t=State.tarefas.find(x=>x.id===id);if(!t)return;
+  let gasto=t.tempo_gasto||0;
+  if(State.timerAtivo&&State.timerAtivo.tarefaId===id){
+    gasto+=Math.floor((Date.now()-State.timerAtivo.inicio)/1000);
+    stopTimer();
+  }
+  await getSB().from('meu_espaco_tarefas').update({concluida:true,status:'concluido',tempo_gasto:gasto,concluida_at:new Date().toISOString()}).eq('id',id);
+  t.concluida=true;t.status='concluido';t.tempo_gasto=gasto;
+  updateBadge();reRenderPage();toast('🎉 Concluída!');
+}
+
+async function reabrirTarefa(id){
+  await getSB().from('meu_espaco_tarefas').update({concluida:false,status:'pendente',concluida_at:null}).eq('id',id);
+  const t=State.tarefas.find(x=>x.id===id);
+  if(t){t.concluida=false;t.status='pendente';t.concluida_at=null;}
+  updateBadge();reRenderPage();
+}
+
+function reRenderPage(){
+  if(State.projetoAtual)renderProjetoDetalhe(State.projetoAtual);
+  else if(App.current==='tarefas')renderTarefas();
+  else if(App.current==='dashboard')renderDashboard();
+}
+
+// ══════════════════════════════════════════
+// TASK CARD UNIVERSAL (com timer)
+// ══════════════════════════════════════════
+function renderTaskCard(t){
+  const sp=statusPrazo(t.data_vencimento);
+  const isAtiva=t.status==='ativo';
+  const isPausa=t.status==='pausado';
+  const isConcl=t.concluida;
+  const gastSeg=t.tempo_gasto||0;
+  const gastMin=Math.round(gastSeg/60);
+
+  let btns='';
+  if(!isConcl){
+    if(isAtiva){
+      const segAtual=getSegAtual(t.id);
+      btns=`<span class="timer-disp" id="tdisp-${t.id}">${fmtSec(segAtual)}</span>
+        <button class="btn-timer running" onclick="pausarTarefa('${t.id}')">⏸ Pausar</button>
+        <button class="btn-timer concluir" onclick="concluirTarefa('${t.id}')">✓ Concluir</button>`;
+    } else if(isPausa){
+      btns=`${gastMin>0?`<span style="font-size:.7rem;color:var(--text3)">⏱${fmtMin(gastMin)}</span>`:''}
+        <button class="btn-timer paused" onclick="iniciarTarefa('${t.id}')">▶ Continuar</button>
+        <button class="btn-timer concluir" onclick="concluirTarefa('${t.id}')">✓ Concluir</button>`;
+    } else {
+      btns=`<button class="btn-timer start" onclick="iniciarTarefa('${t.id}')">▶ Iniciar</button>`;
+    }
+  } else {
+    btns=`${gastMin>0?`<span style="font-size:.7rem;color:var(--text3)">⏱${fmtMin(gastMin)}</span>`:''}
+      <button class="btn-icon" style="font-size:.7rem" onclick="reabrirTarefa('${t.id}')">↩ Reabrir</button>`;
+  }
+
+  const proj=State.projetos.find(p=>p.id===t.projeto_id);
+
+  return`<div class="task-card ${isAtiva?'ativa':''} ${isConcl?'concluida':''}" id="tcard-${t.id}">
+    <div class="task-card-header">
+      <div class="task-card-info">
+        <div class="task-card-nome ${isConcl?'riscado':''}">${t.texto}</div>
+        <div class="task-card-meta">
+          <span class="task-prio p-${t.prioridade||'media'}"></span>
+          ${t.categoria?`<span class="task-tag tag-cat">${t.categoria}</span>`:''}
+          ${proj?`<span class="task-tag tag-cat" style="background:${proj.cor||'var(--bg3)'}22">${proj.nome}</span>`:''}
+          ${t.data_vencimento?`<span class="task-tag tag-prazo ${sp||''}">${sp==='vencido'?'⚠ ':sp==='proximo'?'⏰ ':''}${brDate(t.data_vencimento)}</span>`:''}
+          ${t.meta_tempo?`<span class="task-tag tag-meta">meta: ${fmtMin(t.meta_tempo)}</span>`:''}
+          ${gastMin>0&&!isAtiva?`<span class="task-tag tag-tempo">⏱ ${fmtMin(gastMin)}</span>`:''}
+        </div>
+      </div>
+    </div>
+    <div class="task-card-btns">${btns}</div>
+  </div>`;
+}
 
 // DASHBOARD
 function renderDashboard(){
@@ -805,8 +1032,9 @@ function modalNovaTarefa(projetoId){
     </div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Data de vencimento</label><input type="date" class="form-input" id="m-t-data"></div>
-      <div class="form-group" id="rec-wrap" style="display:${State.tarefaTab==='recorrente'?'block':'none'}"><label class="form-label">Repetir a cada (dias)</label><input type="number" class="form-input" id="m-t-periodo" placeholder="Ex: 7" min="1"></div>
+      <div class="form-group"><label class="form-label">⏱ Meta de tempo (min)</label><input type="number" class="form-input" id="m-t-meta" placeholder="Ex: 30" min="1"></div>
     </div>
+    <div class="form-group" id="rec-wrap" style="display:${State.tarefaTab==='recorrente'?'block':'none'}"><label class="form-label">Repetir a cada (dias)</label><input type="number" class="form-input" id="m-t-periodo" placeholder="Ex: 7" min="1"></div>
     ${projs?`<div class="form-group"><label class="form-label">Projeto</label><select class="form-select" id="m-t-proj"><option value="">— nenhum —</option>${projs}</select></div>`:''}`,
     `<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="salvarTarefa('${projetoId||''}')">Adicionar</button>`
   );
@@ -824,10 +1052,11 @@ async function salvarTarefa(projetoId){
   const prio=document.getElementById('m-t-prio').value;
   const data=document.getElementById('m-t-data').value||null;
   const per=document.getElementById('m-t-periodo')?.value||null;
+  const meta=document.getElementById('m-t-meta')?.value||null;
   const proj=document.getElementById('m-t-proj')?.value||projetoId||null;
   if(!texto){toast('Digite o texto!','error');return;}
-  const novaCompleta={id:uid(),user_id:State.user.id,texto,tipo,prioridade:prio,concluida:false,data_vencimento:data,recorrencia_periodo:per?parseInt(per):null,projeto_id:proj||null};
-  const novaSimples={id:novaCompleta.id,user_id:State.user.id,texto,tipo,prioridade:prio,concluida:false};
+  const novaCompleta={id:uid(),user_id:State.user.id,texto,tipo,prioridade:prio,concluida:false,status:'pendente',tempo_gasto:0,data_vencimento:data,recorrencia_periodo:per?parseInt(per):null,meta_tempo:meta?parseInt(meta):null,projeto_id:proj||null};
+  const novaSimples={id:novaCompleta.id,user_id:State.user.id,texto,tipo,prioridade:prio,concluida:false,status:'pendente',tempo_gasto:0};
   let{error}=await getSB().from('meu_espaco_tarefas').insert(novaCompleta);
   if(error&&error.message&&error.message.includes('column')){
     const r2=await getSB().from('meu_espaco_tarefas').insert(novaSimples);
@@ -872,117 +1101,99 @@ function renderProjetoCard(p){
   </div>`;
 }
 
-function abrirProjeto(id){State.projetoAtual=id;renderProjetos();}
+function abrirProjeto(id){State.projetoAtual=id;State.projetoTab='tarefas';renderProjetos();}
 
 function renderProjetoDetalhe(id){
   const p=State.projetos.find(x=>x.id===id);if(!p)return;
   const c=document.getElementById('page-content');
   const cor=p.cor||'#7eb87e';
-  const ativs=State.atividades.filter(a=>a.projeto_id===id);
-  const ideiasP=State.ideias.filter(i=>i.projeto_id===id);
   const sm={ativo:'s-ativo',pausado:'s-pausado',concluido:'s-concluido',planejado:'s-planejado'}[p.status]||'s-planejado';
-  const sl={ativo:'Ativo',pausado:'Pausado',concluído:'Concluído',planejado:'Planejado'}[p.status]||p.status;
-
-  // Stats das atividades
-  const todasTarefas=State.ativTarefas.filter(t=>ativs.some(a=>a.id===t.atividade_id));
-  const concl=todasTarefas.filter(t=>t.concluida).length;
+  const sl={ativo:'Ativo',pausado:'Pausado',concluido:'Concluído',planejado:'Planejado'}[p.status]||p.status;
+  const tab=State.projetoTab||'tarefas';
 
   c.innerHTML=`
   <button class="back-btn" onclick="State.projetoAtual=null;renderProjetos()">← Voltar</button>
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;gap:12px;flex-wrap:wrap">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap">
     <div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
-        <div style="width:12px;height:12px;border-radius:50%;background:${cor};flex-shrink:0"></div>
-        <div style="font-family:'Fraunces',serif;font-size:1.7rem;font-weight:700">${p.nome}</div>
+        <div style="width:11px;height:11px;border-radius:50%;background:${cor};flex-shrink:0"></div>
+        <div style="font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700">${p.nome}</div>
         <span class="projeto-status ${sm}">${sl}</span>
       </div>
-      ${p.descricao?`<div style="color:var(--text2);font-size:.88rem">${p.descricao}</div>`:''}
+      ${p.descricao?`<div style="color:var(--text2);font-size:.86rem">${p.descricao}</div>`:''}
+      ${p.data_prazo?`<div style="font-size:.75rem;color:${statusPrazo(p.data_prazo)==='vencido'?'var(--rose)':statusPrazo(p.data_prazo)==='proximo'?'var(--amber)':'var(--text3)'};margin-top:4px">📅 Prazo: ${brDate(p.data_prazo)}</div>`:''}
     </div>
     <button class="btn-secondary" onclick="editarProjeto('${id}')">Editar</button>
   </div>
+
+  <!-- Progresso -->
+  <div class="card" style="margin-bottom:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <span style="font-size:.78rem;color:var(--text2)">Progresso</span>
+      <span class="progress-value" id="prog-val">${p.progresso||0}%</span>
+    </div>
+    <div class="progress-bar-wrap" style="height:7px"><div class="progress-bar" id="prog-bar" style="width:${p.progresso||0}%;background:${cor};height:7px"></div></div>
+    <input type="range" class="progress-slider" min="0" max="100" value="${p.progresso||0}"
+      oninput="document.getElementById('prog-val').textContent=this.value+'%';document.getElementById('prog-bar').style.width=this.value+'%'"
+      onchange="salvarProgresso('${id}',this.value)">
+  </div>
+
+  <!-- Abas -->
+  <div class="proj-tabs">
+    <button class="proj-tab ${tab==='tarefas'?'active':''}" onclick="State.projetoTab='tarefas';renderProjetoDetalhe('${id}')">✓ Tarefas</button>
+    <button class="proj-tab ${tab==='metas'?'active':''}" onclick="State.projetoTab='metas';renderProjetoDetalhe('${id}')">🎯 Metas</button>
+    <button class="proj-tab ${tab==='metricas'?'active':''}" onclick="State.projetoTab='metricas';renderProjetoDetalhe('${id}')">📊 Métricas</button>
+    <button class="proj-tab ${tab==='ideias'?'active':''}" onclick="State.projetoTab='ideias';renderProjetoDetalhe('${id}')">💡 Ideias</button>
+  </div>
+  <div id="proj-tab-body"></div>`;
+
+  if(tab==='tarefas')renderTabTarefas(id);
+  else if(tab==='metas')renderTabMetas(id);
+  else if(tab==='metricas')renderTabMetricas(id);
+  else if(tab==='ideias')renderTabIdeias(id);
+}
+
+// ── ABA TAREFAS ──
+function renderTabTarefas(id){
+  const body=document.getElementById('proj-tab-body');
+  const ativs=State.atividades.filter(a=>a.projeto_id===id);
+  const tarefasAvulsas=State.tarefas.filter(t=>t.projeto_id===id);
+  const ideiasP=State.ideias.filter(i=>i.projeto_id===id);
+  const todasAtivT=State.ativTarefas.filter(t=>ativs.some(a=>a.id===t.atividade_id));
+  const concl=todasAtivT.filter(t=>t.concluida).length;
+
+  body.innerHTML=`
   <div class="projeto-detalhe-grid">
     <div>
-      <!-- PROGRESSO -->
-      <div class="card" style="margin-bottom:16px">
-        <div class="section-header"><div class="section-title">Progresso</div><span class="progress-value" id="prog-val">${p.progresso||0}%</span></div>
-        <div class="progress-bar-wrap" style="height:8px"><div class="progress-bar" id="prog-bar" style="width:${p.progresso||0}%;background:${cor};height:8px"></div></div>
-        <input type="range" class="progress-slider" min="0" max="100" value="${p.progresso||0}"
-          oninput="document.getElementById('prog-val').textContent=this.value+'%';document.getElementById('prog-bar').style.width=this.value+'%'"
-          onchange="salvarProgresso('${id}',this.value)">
-        ${todasTarefas.length>0?`<div style="font-size:.75rem;color:var(--text2);margin-top:8px">${concl} de ${todasTarefas.length} tarefas concluídas</div>`:''}
-      </div>
-
-      <!-- ATIVIDADES -->
       <div class="card">
         <div class="section-header">
           <div class="section-title">Atividades</div>
           <button class="btn-secondary" style="font-size:.76rem;padding:5px 10px" onclick="modalNovaAtividade('${id}')">+ Atividade</button>
         </div>
         ${ativs.length===0
-          ?`<div class="empty-state"><p>Nenhuma atividade. Crie uma para organizar as tarefas!</p></div>`
-          :ativs.map(a=>renderAtivBloco(a,id)).join('')
-        }
+          ?`<div class="empty-state"><p>Nenhuma atividade ainda.</p></div>`
+          :ativs.map(a=>renderAtivBloco(a,id)).join('')}
       </div>
     </div>
-
-    <!-- PAINEL LATERAL -->
     <div>
       <div class="card" style="margin-bottom:14px">
-        <div class="section-title" style="margin-bottom:12px">Informações</div>
-        ${p.data_prazo?`
-          <div style="margin-bottom:12px">
-            <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">Prazo do projeto</div>
-            <div style="font-family:'Fraunces',serif;font-size:1.15rem;font-weight:700;color:${cor}">${brDate(p.data_prazo)}</div>
-            ${(()=>{const st=statusPrazo(p.data_prazo);return st==='vencido'?`<div style="font-size:.72rem;color:var(--rose);margin-top:2px">⚠ Prazo vencido</div>`:st==='proximo'?`<div style="font-size:.72rem;color:var(--amber);margin-top:2px">⏰ Vence em breve</div>`:''})()}
+        <div class="section-title" style="margin-bottom:10px">Resumo</div>
+        ${(()=>{const p=State.projetos.find(x=>x.id===id);const sp=statusPrazo(p?.data_prazo);return p?.data_prazo?`<div style="margin-bottom:10px"><div style="font-size:.7rem;color:var(--text2);margin-bottom:2px">Prazo</div><div style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:${sp==='vencido'?'var(--rose)':sp==='proximo'?'var(--amber)':'var(--darkgreen)'}">${brDate(p.data_prazo)}</div></div>`:''})()}
+        <div style="display:flex;gap:9px">
+          <div style="flex:1;text-align:center;background:var(--bg2);border-radius:8px;padding:9px">
+            <div style="font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700">${todasAtivT.filter(t=>!t.concluida).length}</div>
+            <div style="font-size:.68rem;color:var(--text2)">pendentes</div>
           </div>
-        `:''}
-        <div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Status das tarefas</div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <div style="text-align:center;background:var(--bg2);border-radius:8px;padding:8px 12px;flex:1">
-            <div style="font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:var(--text)">${todasTarefas.filter(t=>!t.concluida).length}</div>
-            <div style="font-size:.7rem;color:var(--text2)">pendentes</div>
-          </div>
-          <div style="text-align:center;background:rgba(46,110,56,.08);border-radius:8px;padding:8px 12px;flex:1">
+          <div style="flex:1;text-align:center;background:rgba(46,110,56,.08);border-radius:8px;padding:9px">
             <div style="font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:var(--emerald)">${concl}</div>
-            <div style="font-size:.7rem;color:var(--text2)">concluídas</div>
+            <div style="font-size:.68rem;color:var(--text2)">concluídas</div>
           </div>
         </div>
       </div>
-
       <div class="card" style="margin-bottom:14px">
-        <div class="section-header"><div class="section-title">Tarefas avulsas</div><button class="btn-secondary" style="font-size:.76rem;padding:5px 10px" onclick="modalNovaTarefa('${id}')">+ Adicionar</button></div>
-        ${(()=>{
-          const tarefasP=State.tarefas.filter(t=>t.projeto_id===id);
-          const pend=tarefasP.filter(t=>!t.concluida);
-          const done=tarefasP.filter(t=>t.concluida);
-          if(!tarefasP.length)return`<div class="empty-state"><p>Nenhuma tarefa avulsa.</p></div>`;
-          return`<div class="kanban">
-            <div class="kanban-col">
-              <div class="kanban-col-title">A fazer <span class="kanban-count">${pend.length}</span></div>
-              ${pend.length===0?`<div style="font-size:.78rem;color:var(--text3);text-align:center;padding:12px">Tudo feito!</div>`:
-                pend.map(t=>`<div class="kanban-task">
-                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
-                    <div style="width:17px;height:17px;border-radius:4px;border:2px solid var(--border2);cursor:pointer;flex-shrink:0" onclick="toggleTarefa('${t.id}');setTimeout(()=>{if(State.projetoAtual)renderProjetoDetalhe('${id}');},300)"></div>
-                    <div class="task-prio p-${t.prioridade||'media'}"></div>
-                  </div>
-                  <div class="kanban-task-text">${t.texto}</div>
-                  ${t.data_vencimento?`<div style="font-size:.71rem;color:var(--text3);margin-top:4px">${brDate(t.data_vencimento)}</div>`:''}
-                </div>`).join('')}
-            </div>
-            <div class="kanban-col" style="background:rgba(46,110,56,.05)">
-              <div class="kanban-col-title" style="color:var(--emerald)">Concluídas <span class="kanban-count">${done.length}</span></div>
-              ${done.length===0?`<div style="font-size:.78rem;color:var(--text3);text-align:center;padding:12px">Nenhuma ainda.</div>`:
-                done.map(t=>`<div class="kanban-task" style="opacity:.65">
-                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
-                    <div style="width:17px;height:17px;border-radius:4px;background:var(--darkgreen);border:2px solid var(--darkgreen);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center" onclick="toggleTarefa('${t.id}');setTimeout(()=>{if(State.projetoAtual)renderProjetoDetalhe('${id}');},300)"><span style="color:var(--lime);font-size:.6rem;font-weight:700">✓</span></div>
-                  </div>
-                  <div class="kanban-task-text done">${t.texto}</div>
-                </div>`).join('')}
-            </div>
-          </div>`;
-        })()}
+        <div class="section-header"><div class="section-title">Tarefas avulsas</div><button class="btn-secondary" style="font-size:.76rem;padding:5px 10px" onclick="modalNovaTarefa('${id}')">+ Tarefa</button></div>
+        ${tarefasAvulsas.length===0?`<div class="empty-state"><p>Nenhuma tarefa avulsa.</p></div>`:tarefasAvulsas.map(t=>renderTaskCard(t)).join('')}
       </div>
-
       <div class="card">
         <div class="section-header"><div class="section-title">Ideias</div><button class="btn-secondary" style="font-size:.76rem;padding:5px 10px" onclick="modalNovaIdeia('${id}')">+ Ideia</button></div>
         ${ideiasP.length===0?`<div class="empty-state"><p>Nenhuma ideia.</p></div>`:
@@ -996,6 +1207,201 @@ function renderProjetoDetalhe(id){
       </div>
     </div>
   </div>`;
+}
+
+// ── ABA METAS ──
+function renderTabMetas(id){
+  const body=document.getElementById('proj-tab-body');
+  const metas=State.metas?State.metas.filter(m=>m.projeto_id===id):[];
+  const por={andamento:metas.filter(m=>m.status==='andamento'),pendente:metas.filter(m=>m.status==='pendente'),atingida:metas.filter(m=>m.status==='atingida')};
+
+  body.innerHTML=`
+  <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+    <button class="btn-primary" onclick="modalNovaMeta('${id}')">+ Nova meta</button>
+  </div>
+  ${metas.length===0?`<div class="empty-state" style="padding:60px"><p>Nenhuma meta ainda.<br>Defina onde quer chegar com este projeto!</p></div>`:''}
+  ${por.andamento.length>0?`<div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:8px">Em andamento</div>${por.andamento.map(m=>renderMetaCard(m,id)).join('')}`:''}
+  ${por.pendente.length>0?`<div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px;margin-top:14px">Pendentes</div>${por.pendente.map(m=>renderMetaCard(m,id)).join('')}`:''}
+  ${por.atingida.length>0?`<div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--emerald);margin-bottom:8px;margin-top:14px">✓ Atingidas</div>${por.atingida.map(m=>renderMetaCard(m,id)).join('')}`:''}`;
+}
+
+function renderMetaCard(m,projId){
+  const stCls={pendente:'ms-pendente',andamento:'ms-andamento',atingida:'ms-atingida'}[m.status]||'ms-pendente';
+  const stLabel={pendente:'Pendente',andamento:'Em andamento',atingida:'✓ Atingida'}[m.status]||m.status;
+  return`<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:13px;margin-bottom:9px;position:relative">
+    <button style="position:absolute;top:9px;right:9px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:.78rem" onclick="deletarMeta('${m.id}','${projId}')">✕</button>
+    <div style="font-weight:600;font-size:.87rem;color:var(--text);margin-bottom:4px;padding-right:20px">${m.titulo}</div>
+    ${m.descricao?`<div style="font-size:.77rem;color:var(--text2);line-height:1.5;margin-bottom:8px">${m.descricao}</div>`:''}
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span style="font-size:.67rem;padding:2px 8px;border-radius:10px;font-weight:600;background:${m.status==='atingida'?'rgba(46,110,56,.1)':m.status==='andamento'?'rgba(176,122,40,.12)':'rgba(43,59,28,.07)'};color:${m.status==='atingida'?'var(--emerald)':m.status==='andamento'?'var(--amber)':'var(--text2)'}">${stLabel}</span>
+      ${m.prazo?`<span style="font-size:.69rem;color:var(--text3)">📅 ${brDate(m.prazo)}</span>`:''}
+      ${m.previsao_horas?`<span style="font-size:.69rem;color:var(--text3)">⏱ ~${m.previsao_horas}h previstas</span>`:''}
+      <button class="btn-icon" style="font-size:.7rem;padding:3px 8px;margin-left:auto" onclick="modalAtualizarMeta('${m.id}','${projId}')">Atualizar</button>
+    </div>
+  </div>`;
+}
+
+function modalNovaMeta(projId){
+  openModal('Nova meta','Defina onde quer chegar neste projeto',
+    `<div class="form-group"><label class="form-label">Título</label><input type="text" class="form-input" id="m-m-titulo" placeholder="Ex: Lançar versão beta..."></div>
+    <div class="form-group"><label class="form-label">Descrição</label><textarea class="form-textarea" id="m-m-desc" placeholder="O que precisa acontecer para atingir esta meta?" style="min-height:70px"></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Prazo</label><input type="date" class="form-input" id="m-m-prazo"></div>
+      <div class="form-group"><label class="form-label">Previsão (horas)</label><input type="number" class="form-input" id="m-m-horas" placeholder="Ex: 20" min="1"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Status</label>
+      <select class="form-select" id="m-m-status"><option value="pendente">Pendente</option><option value="andamento">Em andamento</option></select>
+    </div>`,
+    `<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="salvarNovaMeta('${projId}')">Criar meta</button>`
+  );
+}
+
+async function salvarNovaMeta(projId){
+  const titulo=document.getElementById('m-m-titulo').value.trim();
+  if(!titulo){toast('Digite o título!','error');return;}
+  const nova={id:uid(),user_id:State.user.id,projeto_id:projId,titulo,
+    descricao:document.getElementById('m-m-desc').value.trim()||null,
+    prazo:document.getElementById('m-m-prazo').value||null,
+    previsao_horas:document.getElementById('m-m-horas').value?parseInt(document.getElementById('m-m-horas').value):null,
+    status:document.getElementById('m-m-status').value,
+    created_at:new Date().toISOString()};
+  const{error}=await getSB().from('meu_espaco_metas').insert(nova);
+  if(error){toast('Erro: '+error.message,'error');return;}
+  if(!State.metas)State.metas=[];
+  State.metas.push(nova);closeModal();renderProjetoDetalhe(projId);toast('Meta criada!');
+}
+
+function modalAtualizarMeta(id,projId){
+  const m=State.metas.find(x=>x.id===id);if(!m)return;
+  openModal('Atualizar meta',m.titulo,
+    `<div class="form-group"><label class="form-label">Status</label>
+      <select class="form-select" id="m-ms-status">
+        <option value="pendente" ${m.status==='pendente'?'selected':''}>Pendente</option>
+        <option value="andamento" ${m.status==='andamento'?'selected':''}>Em andamento</option>
+        <option value="atingida" ${m.status==='atingida'?'selected':''}>✓ Atingida!</option>
+      </select>
+    </div>`,
+    `<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="salvarStatusMeta('${id}','${projId}')">Salvar</button>`
+  );
+}
+
+async function salvarStatusMeta(id,projId){
+  const status=document.getElementById('m-ms-status').value;
+  const{error}=await getSB().from('meu_espaco_metas').update({status}).eq('id',id);
+  if(error){toast('Erro','error');return;}
+  const m=State.metas.find(x=>x.id===id);if(m)m.status=status;
+  closeModal();renderProjetoDetalhe(projId);
+  toast(status==='atingida'?'🎉 Meta atingida!':'Status atualizado!');
+}
+
+async function deletarMeta(id,projId){
+  await getSB().from('meu_espaco_metas').delete().eq('id',id);
+  State.metas=State.metas.filter(m=>m.id!==id);
+  renderProjetoDetalhe(projId);toast('Meta removida.');
+}
+
+// ── ABA MÉTRICAS DO PROJETO ──
+function renderTabMetricas(id){
+  const body=document.getElementById('proj-tab-body');
+  const tarefas=State.tarefas.filter(t=>t.projeto_id===id);
+  const ativs=State.atividades.filter(a=>a.projeto_id===id);
+  const ativTar=State.ativTarefas.filter(t=>ativs.some(a=>a.id===t.atividade_id));
+  const todas=[...tarefas,...ativTar];
+  const concl=todas.filter(t=>t.concluida);
+  const totalSeg=todas.reduce((s,t)=>s+(t.tempo_gasto||0),0);
+  const totalMin=Math.round(totalSeg/60);
+  const metas=State.metas?State.metas.filter(m=>m.projeto_id===id):[];
+  const prevHoras=metas.reduce((s,m)=>s+(m.previsao_horas||0),0);
+
+  // Top tarefas por tempo
+  const comTempo=[...todas].filter(t=>(t.tempo_gasto||0)>60).sort((a,b)=>(b.tempo_gasto||0)-(a.tempo_gasto||0)).slice(0,8);
+  const maxT=comTempo[0]?.tempo_gasto||1;
+
+  // Tarefas com meta de tempo
+  const comMeta=concl.filter(t=>t.meta_tempo&&t.tempo_gasto);
+  const dentroMeta=comMeta.filter(t=>Math.round(t.tempo_gasto/60)<=t.meta_tempo).length;
+  const foraMeta=comMeta.length-dentroMeta;
+
+  body.innerHTML=`
+  <!-- KPIs -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:11px;margin-bottom:18px">
+    ${[
+      ['⏱',fmtMin(totalMin),'tempo investido'],
+      ['✓',concl.length,'concluídas'],
+      ['⏳',todas.filter(t=>!t.concluida).length,'pendentes'],
+      ['🎯',`${dentroMeta}/${comMeta.length}`,'dentro da meta'],
+    ].map(([ic,n,l])=>`<div class="card" style="text-align:center;padding:14px">
+      <div style="font-size:1.1rem;margin-bottom:4px">${ic}</div>
+      <div style="font-family:'Fraunces',serif;font-size:1.45rem;font-weight:700;color:var(--text);line-height:1;margin-bottom:3px">${n}</div>
+      <div style="font-size:.68rem;color:var(--text2)">${l}</div>
+    </div>`).join('')}
+  </div>
+
+  ${prevHoras>0?`
+  <div class="card" style="margin-bottom:16px">
+    <div class="section-title" style="margin-bottom:12px">Previsto vs. Realizado</div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap">
+      ${[['Previsto',fmtMin(prevHoras*60),'var(--blue)'],['Realizado',fmtMin(totalMin),totalMin>prevHoras*60?'var(--rose)':'var(--emerald)'],['Diferença',`${totalMin>prevHoras*60?'+':''}${fmtMin(Math.abs(totalMin-prevHoras*60))}`,totalMin>prevHoras*60?'var(--rose)':'var(--emerald)']].map(([l,v,cor])=>`
+      <div style="flex:1;min-width:90px;text-align:center;background:var(--bg2);border-radius:10px;padding:12px">
+        <div style="font-size:.72rem;color:var(--text2);margin-bottom:4px">${l}</div>
+        <div style="font-family:'Fraunces',serif;font-size:1.25rem;font-weight:700;color:${cor}">${v}</div>
+      </div>`).join('')}
+    </div>
+  </div>`:''}
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="section-title" style="margin-bottom:12px">🔥 Tarefas que mais consumiram tempo</div>
+    ${comTempo.length===0
+      ?`<div style="text-align:center;padding:24px;color:var(--text3);font-size:.82rem">Inicie tarefas para ver os dados aqui.</div>`
+      :`<div>${comTempo.map(t=>{
+          const pct=Math.round((t.tempo_gasto/maxT)*100);
+          const min=Math.round((t.tempo_gasto||0)/60);
+          const dentroM=t.meta_tempo&&min<=t.meta_tempo;
+          const cor=t.meta_tempo?(dentroM?'var(--emerald)':'var(--rose)'):'var(--darkgreen)';
+          return`<div style="display:flex;align-items:center;gap:9px;margin-bottom:8px">
+            <div style="font-size:.73rem;color:var(--text2);width:120px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${t.texto}">${t.texto}</div>
+            <div style="flex:1;background:var(--bg3);border-radius:100px;height:7px;overflow:hidden"><div style="height:100%;border-radius:100px;width:${pct}%;background:${cor}"></div></div>
+            <div style="font-size:.7rem;color:var(--text3);width:48px;flex-shrink:0;text-align:right">${fmtMin(min)}</div>
+          </div>`;
+        }).join('')}</div>
+        <div style="font-size:.7rem;color:var(--text3);margin-top:6px">🟢 dentro da meta &nbsp; 🔴 acima da meta</div>`}
+  </div>
+
+  ${comMeta.length>0?`
+  <div class="card">
+    <div class="section-title" style="margin-bottom:4px">🎯 Meta de tempo vs. Real</div>
+    <div style="font-size:.76rem;color:var(--text2);margin-bottom:12px">Tempo estimado × tempo real gasto</div>
+    ${comMeta.slice(0,6).map(t=>{
+      const real=Math.round((t.tempo_gasto||0)/60);
+      const meta=t.meta_tempo;
+      const ok=real<=meta;
+      const pct=Math.min(Math.round(real/meta*100),100);
+      return`<div style="display:flex;align-items:center;gap:9px;margin-bottom:8px">
+        <div style="font-size:.73rem;color:var(--text2);width:120px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${t.texto}">${t.texto}</div>
+        <div style="flex:1;background:var(--bg3);border-radius:100px;height:7px;overflow:hidden"><div style="height:100%;border-radius:100px;width:${pct}%;background:${ok?'var(--emerald)':'var(--rose)'}"></div></div>
+        <div style="font-size:.7rem;width:72px;flex-shrink:0;text-align:right;color:${ok?'var(--emerald)':'var(--rose)'};font-weight:600">${fmtMin(real)}/${fmtMin(meta)}</div>
+      </div>`;
+    }).join('')}
+  </div>`:''}`;
+}
+
+// ── ABA IDEIAS ──
+function renderTabIdeias(id){
+  const body=document.getElementById('proj-tab-body');
+  const ideiasP=State.ideias.filter(i=>i.projeto_id===id);
+  body.innerHTML=`
+  <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+    <button class="btn-primary" onclick="modalNovaIdeia('${id}')">+ Ideia</button>
+  </div>
+  ${ideiasP.length===0?`<div class="empty-state" style="padding:60px"><p>Nenhuma ideia para este projeto.</p></div>`:
+    `<div class="ideias-grid">${ideiasP.map(i=>`<div class="ideia-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+        <div class="ideia-titulo">${i.titulo}</div>
+        <button style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:.82rem" onclick="deletarIdeia('${i.id}')">✕</button>
+      </div>
+      <div class="ideia-body">${i.conteudo||''}</div>
+      <div class="ideia-meta"><span></span><span class="ideia-date">${brDate(i.created_at?.slice(0,10))}</span></div>
+    </div>`).join('')}</div>`}`;
 }
 
 // =================== ATIVIDADES ===================
